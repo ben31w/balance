@@ -1,0 +1,22 @@
+{% extends 'commons/base.html' %}
+
+{% block content %}
+    <h2>Create an account</h2>
+
+    {% if form.errors %}
+        <p>
+            Either the username was taken or the passwords didn't match.
+            Please check which error(s) apply to you, and correct them.
+        </p>
+    {%  endif %}
+
+    <form  method="post" action="{% url 'users:register' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button name="submit">Register</button>
+
+        <!-- redirect to home page after the user registers -->
+        <input type="hidden" name="next" value="{% url 'commons:index' %}" />
+    </form>
+{% endblock content %}

@@ -1,0 +1,30 @@
+<!--
+This is the template that all pages will inherit from.
+
+It has a navbar at the top, with a different view depending on whether the user
+is logged in. The content after the navbar is custom to each page.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Balance</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <p>
+        <a href="{% url 'commons:index' %}">Home</a> -
+        <a href="{% url 'workout_log:index' %}">Workout Log</a> -
+        {% if user.is_authenticated %}
+            Hello, {{ user.username }}. -
+            <a href="{% url 'users:logout' %}">Log out</a>
+        {% else %}
+            <a href="{% url 'users:login' %}">Log in</a> -
+            <a href="{% url 'users:register' %}">Register</a>
+        {% endif %}
+    </p>
+
+    <!-- Page content -->
+    {% block content %}{% endblock content %}
+</body>
+</html>
