@@ -1,4 +1,7 @@
+balance_env/
 .env
 .idea/
 __pycache__/
 *.sqlite3
+staticfiles/
+
