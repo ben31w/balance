@@ -6,6 +6,7 @@ Models for the Workout Log:
 - Set
 """
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -16,8 +17,9 @@ class Exercise(models.Model):
     - name
     - isCompound
     - equipment
+    - createdBy
     Exercises can have the same name but different equipments, making
-    them different exercises.
+    them different exercises. There is a constraint to check this rule.
     Ex: bench press (barbell), bench press (dumbbells)
     """
     name = models.CharField(max_length=40)
@@ -26,15 +28,29 @@ class Exercise(models.Model):
     DUMBBELLS = "DB"
     CABLES = "CB"
     MACHINE = "MC"
+    HEXBAR = "HB"
+    KETTLEBELL = "KB"
     BODYWEIGHT = "BW"
     EQUIPMENT_CHOICES = [
         (BARBELL, "Barbell"),
         (DUMBBELLS, "Dumbbells"),
         (CABLES, "Cables"),
         (MACHINE, "Machine"),
-        (BODYWEIGHT, "Bodyweight")
+        (HEXBAR, "Hexbar"),
+        (KETTLEBELL, "Kettlebell"),
+        (BODYWEIGHT, "Bodyweight"),
     ]
     equipment = models.CharField(max_length=2, choices=EQUIPMENT_CHOICES)
+    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    # Check that this exercise doesn't already exist before saving it.
+    #  Unfortunately this interferes with trying to edit an exercise.
+    #  Can this be done through Django constraints instead?
+    def clean(self):
+        for exercise in Exercise.objects.all():
+            if self.__str__().lower() == exercise.__str__().lower():
+                raise ValidationError('An exercise with identical name and '
+                                      'equipment already exists.')
 
     def __str__(self):
         return f"{self.name} ({self.equipment})"
@@ -45,6 +61,9 @@ class Muscle(models.Model):
     A muscle that an exercise works.
     """
     name = models.CharField(max_length=25)
+
+    def __str__(self):
+        return self.name
 
 
 class MuscleWorked(models.Model):
@@ -57,6 +76,14 @@ class MuscleWorked(models.Model):
     muscle = models.ForeignKey(Muscle, on_delete=models.RESTRICT)
     directlyTargets = models.BooleanField()
 
+    class Meta:
+        verbose_name_plural = 'muscles worked'
+
+    def __str__(self):
+        if self.directlyTargets:
+            return f"{self.exercise}, {self.muscle}, Direct"
+        return f"{self.exercise}, {self.muscle}, Indirect"
+
 
 class Set(models.Model):
     """
@@ -65,8 +92,8 @@ class Set(models.Model):
     logged it.
     """
     date = models.DateField()
+    exercise = models.ForeignKey(Exercise, on_delete=models.RESTRICT)
     reps = models.IntegerField()
     weight = models.FloatField()
-    exercise = models.ForeignKey(Exercise, on_delete=models.RESTRICT)
     logged_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
