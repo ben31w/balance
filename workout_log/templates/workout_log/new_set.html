@@ -1,0 +1,13 @@
+<!-- Page for logging a new set in the Workout Log app -->
+
+{% extends 'commons/base.html' %}
+
+{% block content %}
+<h1>Add a new set</h1>
+
+<form method="post" action="{% url 'workout_log:new_set' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button name="submit">Log set</button>
+</form>
+{% endblock content %}

@@ -30,6 +30,7 @@ class Exercise(models.Model):
     MACHINE = "MC"
     HEXBAR = "HB"
     KETTLEBELL = "KB"
+    RESISTANCE_BAND = "RB"
     BODYWEIGHT = "BW"
     EQUIPMENT_CHOICES = [
         (BARBELL, "Barbell"),
@@ -38,6 +39,7 @@ class Exercise(models.Model):
         (MACHINE, "Machine"),
         (HEXBAR, "Hexbar"),
         (KETTLEBELL, "Kettlebell"),
+        (RESISTANCE_BAND, "Resistance Band"),
         (BODYWEIGHT, "Bodyweight"),
     ]
     equipment = models.CharField(max_length=2, choices=EQUIPMENT_CHOICES)
@@ -96,4 +98,7 @@ class Set(models.Model):
     reps = models.IntegerField()
     weight = models.FloatField()
     logged_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.date}\t{self.exercise}, {self.reps} reps at {self.weight} lbs"
 

@@ -4,4 +4,19 @@
 
 {% block content %}
     <h1>My Workout Log</h1>
+
+    {% for set in sets %}
+        <ul>
+            <li>{{set}}</li>
+        </ul>
+    {% empty %}
+        <p>You haven't logged any exercises yet.</p>
+    {% endfor %}
+
+    <a href="{% url 'workout_log:new_set' %}">
+        Add a new set
+    </a>
+
+<!--    <script src="index.js"></script>-->
+
 {% endblock content %}
