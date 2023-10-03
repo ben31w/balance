@@ -1,13 +1,10 @@
 <!-- Home page for the Workout Log app -->
 
-{% extends 'commons/base.html' %}
+{% extends 'workout_log/base.html' %}
 
-{% block title %}
-    Workout Log
-{% endblock title %}
-
-{% block content %}
+{% block subcontent %}
     <h1>My Workout Log</h1>
+    <h2>Daily View</h2>
 
     {% for date in dates %}
         <h3>{{ date }}</h3>
@@ -29,5 +26,5 @@
         Add a new set
     </a>
 
-{% endblock content %}
+{% endblock subcontent %}
 

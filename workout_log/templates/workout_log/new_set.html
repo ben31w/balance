@@ -1,12 +1,8 @@
 <!-- Page for logging a new set in the Workout Log app -->
 
-{% extends 'commons/base.html' %}
+{% extends 'workout_log/base.html' %}
 
-{% block title %}
-    Log set
-{% endblock title %}
-
-{% block content %}
+{% block subcontent %}
 <h1>Add a new set</h1>
 
 <form method="post" action="{% url 'workout_log:new_set' %}">
@@ -14,4 +10,4 @@
     {{ form.as_p }}
     <button name="submit">Log set</button>
 </form>
-{% endblock content %}
+{% endblock subcontent %}
