@@ -11,8 +11,14 @@ from .models import Exercise, Set
 @login_required
 def index(request):
     """Load the Workout Log home page."""
-    sets = Set.objects.filter(logged_by=request.user)
-    context = {'sets': sets}
+    sets = Set.objects.filter(logged_by=request.user)#.order_by("-date")
+    dates = []
+    for s in sets:
+        date = s.date
+        if date not in dates:
+            dates.append(date)
+    dates.sort(reverse=True)
+    context = {'sets': sets, 'dates': dates}
     return render(request, 'workout_log/index.html', context)
 
 

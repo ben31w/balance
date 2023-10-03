@@ -2,21 +2,29 @@
 
 {% extends 'commons/base.html' %}
 
+{% block title %}
+    Workout Log
+{% endblock title %}
+
 {% block content %}
     <h1>My Workout Log</h1>
 
-    {% for set in sets %}
-        <ul>
-            <li>{{set}}</li>
-        </ul>
+    {% for date in dates %}
+        <h3>{{ date }}</h3>
+        {% for set in sets %}
+            {% if set.date == date %}
+            <ul>
+                <li>{{ set.exercise }}, {{ set.reps}} reps at {{ set.weight }} lbs</li>
+            </ul>
+            {% endif %}
+        {% endfor %}
     {% empty %}
-        <p>You haven't logged any exercises yet.</p>
+        <p>You haven't logged any sets yet.</p>
     {% endfor %}
 
     <a href="{% url 'workout_log:new_set' %}">
         Add a new set
     </a>
 
-<!--    <script src="index.js"></script>-->
-
 {% endblock content %}
+
