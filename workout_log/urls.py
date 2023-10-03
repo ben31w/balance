@@ -9,5 +9,6 @@ app_name = 'workout_log'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('new_set/', views.new_set, name='new_set')
+    path('new_set/', views.new_set, name='new_set'),
+    path('edit_set/<int:set_id>/', views.edit_set, name='edit_set')
 ]

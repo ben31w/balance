@@ -1,0 +1,19 @@
+<!-- Page for editing a set in the Workout Log app -->
+
+{% extends 'commons/base.html' %}
+
+{% block title %}
+    Edit set
+{% endblock title %}
+
+{% block content %}
+<h1>Edit existing set</h1>
+
+<p>Set: {{ set }}</p>
+
+<form method="post" action="{% url 'workout_log:new_set' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button name="submit">Submit changes</button>
+</form>
+{% endblock content %}
