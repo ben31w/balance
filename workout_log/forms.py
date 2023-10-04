@@ -1,5 +1,7 @@
 """
 List of forms for the Workout Log app.
+This file defines the fields that the forms use.
+The backend processing is done in views.py
 """
 
 from django import forms

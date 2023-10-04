@@ -100,5 +100,5 @@ class Set(models.Model):
     logged_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.id}, {self.logged_by}, {self.date}\t{self.exercise}, {self.reps} reps at {self.weight} lbs"
+        return f"{self.id}, {self.logged_by}, {self.date}, {self.exercise}, {self.reps} reps at {self.weight} lbs."
 
