@@ -1,8 +1,6 @@
 """
 Views for the Workout Log app.
 """
-from datetime import date, timedelta
-
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render, redirect
@@ -13,6 +11,7 @@ from .models import Exercise, Muscle, MuscleWorked, Set
 EXERCISES = Exercise.objects.all()
 MUSCLES = Muscle.objects.all()
 MUSCLES_WORKED = MuscleWorked.objects.all()
+
 
 @login_required
 def index(request):
@@ -66,7 +65,6 @@ def edit_set(request, set_id):
 @login_required()
 def weekly(request):
     """Load the Weekly View page"""
-    # TODO fix this
     if request.method == 'GET':
         form = WeeklyForm()
     elif request.method == 'POST':
@@ -74,20 +72,7 @@ def weekly(request):
         if form.is_valid():
             start_date = form.cleaned_data["start_date"]
             end_date = form.cleaned_data["end_date"]
-
-            # Calculate weekly volume
-            sets = (Set.objects.filter(logged_by=request.user)
-                    .filter(date__gte=start_date)
-                    .filter(date__lte=end_date))
-            volume_dict = {muscle.name: 0 for muscle in MUSCLES}
-            for set in sets:
-                muscles_worked = MUSCLES_WORKED.filter(exercise=set.exercise)
-                for muscle_worked in muscles_worked:
-                    if muscle_worked.directlyTargets:
-                        volume_dict[muscle_worked.muscle.name] += 1
-                    else:
-                        volume_dict[muscle_worked.muscle.name] += 0.5
-
+            volume_dict = calculate_volume(request.user, start_date, end_date)
             context = {
                 'form': form,
                 'start_date': start_date,
@@ -108,3 +93,33 @@ def verify_user_is_owner(owner, user):
     """
     if owner != user:
         raise Http404
+
+
+def calculate_volume(user, start_date, end_date):
+    """
+    Get this user's volume (sets per muscle) from the given start date to the
+    end date. Return as a dictionary.
+    :param user:
+    :param start_date:
+    :param end_date:
+    :return:
+    """
+    sets = (Set.objects.filter(logged_by=user)
+            .filter(date__gte=start_date)
+            .filter(date__lte=end_date))
+    # Key: muscle
+    # Value: 3-list [composite, direct, indirect volume]
+    volume_dict = {muscle.name: [0, 0, 0] for muscle in MUSCLES}
+    for set in sets:
+        muscles_worked = MUSCLES_WORKED.filter(exercise=set.exercise)
+        for muscle_worked in muscles_worked:
+            m = muscle_worked.muscle.name
+            if muscle_worked.directlyTargets:
+                # update composite and direct volume
+                volume_dict[m][0] += 1
+                volume_dict[m][1] += 1
+            else:
+                # update composite and indirect volume
+                volume_dict[m][0] += 0.5
+                volume_dict[m][2] += 1
+    return volume_dict
