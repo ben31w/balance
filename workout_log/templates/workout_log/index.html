@@ -13,7 +13,8 @@
             <ul>
                 <li>
                     {{ set.exercise }}, {{ set.reps}} reps at {{ set.weight }} lbs |
-                    <a href="{% url 'workout_log:edit_set' set.id %}">edit</a>
+                    <a href="{% url 'workout_log:edit_set' set.id %}">edit</a> |
+                    <a href="{% url 'workout_log:delete_set' set.id %}">delete</a>
                 </li>
             </ul>
             {% endif %}

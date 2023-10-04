@@ -12,12 +12,9 @@
     <button name="submit">Submit</button>
     </form>
 
-    <p>{{ start_date }}</p>
-    <p>{{ end_date }}</p>
-    <p>{{ volume_dict }}</p>
-
     <!-- only render the table if the user has submitted a start and end date -->
     {% if start_date and end_date %}
+    <p><strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong></p>
     <table>
         <tr>
           <th></th>

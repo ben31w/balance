@@ -63,6 +63,16 @@ def edit_set(request, set_id):
 
 
 @login_required()
+def delete_set(request, set_id):
+    """Delete this set"""
+    set = Set.objects.get(id=set_id)
+    owner = set.logged_by
+    verify_user_is_owner(owner, request.user)
+    set.delete()
+    return redirect('workout_log:index')
+
+
+@login_required()
 def weekly(request):
     """Load the Weekly View page"""
     if request.method == 'GET':
