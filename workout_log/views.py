@@ -8,8 +8,8 @@ from django.shortcuts import render, redirect
 from .forms import SetForm, WeeklyForm
 from .models import Exercise, Muscle, MuscleWorked, Set
 
-EXERCISES = Exercise.objects.all()
-MUSCLES = Muscle.objects.all()
+EXERCISES = Exercise.objects.order_by("name")
+MUSCLES = Muscle.objects.order_by("name")
 MUSCLES_WORKED = MuscleWorked.objects.all()
 
 
@@ -102,7 +102,7 @@ def calculate_volume(user, start_date, end_date):
     :param user:
     :param start_date:
     :param end_date:
-    :return:
+    :return: volume_dict, maps muscles to [composite, direct, indirect volume]
     """
     sets = (Set.objects.filter(logged_by=user)
             .filter(date__gte=start_date)

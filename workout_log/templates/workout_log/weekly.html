@@ -4,7 +4,7 @@
 
 {% block subcontent %}
     <h1>My Workout Log</h1>
-    <h2>Weekly View</h2>
+    <h2>Volume Manager</h2>
 
     <form method="post" action="{% url 'workout_log:weekly' %}">
         {% csrf_token %}
@@ -15,5 +15,26 @@
     <p>{{ start_date }}</p>
     <p>{{ end_date }}</p>
     <p>{{ volume_dict }}</p>
+
+    <!-- only render the table if the user has submitted a start and end date -->
+    {% if start_date and end_date %}
+    <table>
+        <tr>
+          <th></th>
+          <th scope="col">Composite</th>
+          <th scope="col">Direct</th>
+          <th scope="col">Indirect</th>
+        </tr>
+        <!-- Django takes .items instead of .items() -->
+        {% for exercise,volume_list in volume_dict.items %}
+            <tr>
+                <th scope="row">{{ exercise }}</th>
+                <td>{{ volume_list.0 }}</td>
+                <td>{{ volume_list.1 }}</td>
+                <td>{{ volume_list.2 }}</td>
+            </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
 {% endblock subcontent %}
 
