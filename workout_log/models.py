@@ -90,14 +90,22 @@ class MuscleWorked(models.Model):
 class Set(models.Model):
     """
     A set logged by a user.
-    Each set tracks a date, number of reps, weight, exercise, and the user who
-    logged it.
+    Info entered by user:
+    - date
+    - exercise
+    - reps
+    - weight
+    Info tracked internally:
+    - user who logged the set
+    - index (order) of the set, in relation to other sets on the same day
+      (sets can then be moved around by the user)
     """
     date = models.DateField()
     exercise = models.ForeignKey(Exercise, on_delete=models.RESTRICT)
     reps = models.IntegerField()
     weight = models.FloatField()
     logged_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    index = models.IntegerField()
 
     def __str__(self):
         return f"{self.id}, {self.logged_by}, {self.date}, {self.exercise}, {self.reps} reps at {self.weight} lbs."

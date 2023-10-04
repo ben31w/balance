@@ -75,7 +75,7 @@ def edit_set(request, set_id):
 @login_required
 def index(request):
     """Load the Workout Log home page (Daily view)."""
-    sets = Set.objects.filter(logged_by=request.user)
+    sets = Set.objects.filter(logged_by=request.user).order_by("index")
     dates = []
     for s in sets:
         date = s.date
@@ -96,6 +96,10 @@ def new_set(request):
         if form.is_valid():
             this_set = form.save(commit=False)
             this_set.logged_by = request.user
+            this_date = form.cleaned_data["date"]
+            sets = Set.objects.filter(logged_by=request.user).filter(date=this_date)
+            # insert set behind all existing sets on this date by default
+            this_set.index = len(sets)
             this_set.save()
             return redirect('workout_log:index')
     context = {'form': form}
