@@ -5,5 +5,15 @@
 {% block subcontent %}
     <h1>My Workout Log</h1>
     <h2>Weekly View</h2>
+
+    <form method="post" action="{% url 'workout_log:weekly' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <button name="submit">Submit</button>
+    </form>
+
+    <p>{{ start_date }}</p>
+    <p>{{ end_date }}</p>
+    <p>{{ volume_dict }}</p>
 {% endblock subcontent %}
 

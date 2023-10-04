@@ -8,8 +8,11 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 from .forms import SetForm, WeeklyForm
-from .models import Muscle, MuscleWorked, Set
+from .models import Exercise, Muscle, MuscleWorked, Set
 
+EXERCISES = Exercise.objects.all()
+MUSCLES = Muscle.objects.all()
+MUSCLES_WORKED = MuscleWorked.objects.all()
 
 @login_required
 def index(request):
@@ -64,27 +67,37 @@ def edit_set(request, set_id):
 def weekly(request):
     """Load the Weekly View page"""
     # TODO fix this
-    end_date = date.today()
-    start_date = end_date - timedelta(days=7)
     if request.method == 'GET':
         form = WeeklyForm()
     elif request.method == 'POST':
         form = WeeklyForm(data=request.POST)
         if form.is_valid():
-            start_date = form.start_date
-            end_date = form.end_date
+            start_date = form.cleaned_data["start_date"]
+            end_date = form.cleaned_data["end_date"]
 
-    muscles = Muscle.objects.all()
-    muscles_worked = MuscleWorked.objects.all()
-    context = {
-        'form': form,
-        'start_date': start_date,
-        'end_date': end_date,
-        'muscles': muscles,
-        'muscles_worked': muscles_worked
-    }
+            # Calculate weekly volume
+            sets = (Set.objects.filter(logged_by=request.user)
+                    .filter(date__gte=start_date)
+                    .filter(date__lte=end_date))
+            volume_dict = {muscle.name: 0 for muscle in MUSCLES}
+            for set in sets:
+                muscles_worked = MUSCLES_WORKED.filter(exercise=set.exercise)
+                for muscle_worked in muscles_worked:
+                    if muscle_worked.directlyTargets:
+                        volume_dict[muscle_worked.muscle.name] += 1
+                    else:
+                        volume_dict[muscle_worked.muscle.name] += 0.5
+
+            context = {
+                'form': form,
+                'start_date': start_date,
+                'end_date': end_date,
+                'volume_dict': volume_dict
+            }
+            return render(request, 'workout_log/weekly.html', context)
+
+    context = {'form': form}
     return render(request, 'workout_log/weekly.html', context)
-
 
 
 def verify_user_is_owner(owner, user):
