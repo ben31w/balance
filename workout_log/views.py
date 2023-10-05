@@ -72,6 +72,10 @@ def charts_instance(request, exercise_id):
         avg_wt = sum_wt / len(this_dates_sets)
         weights.append(avg_wt)
 
+    if len(dates) == 0 or len(weights) == 0:
+        context = {'exercise': exercise}
+        return render(request, 'workout_log/charts_instance.html', context)
+
     fig = (px.line(x=dates, y=weights, title=f"{exercise.name}")
            .update_layout(xaxis_title="Date", yaxis_title="Avg. WT moved per set"))
     print(fig)
