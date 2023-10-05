@@ -4,6 +4,7 @@ Views for the Workout Log app.
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render, redirect
+import plotly.express as px
 
 from .forms import SetForm, WeeklyForm
 from .models import Exercise, Muscle, MuscleWorked, Set
@@ -54,8 +55,30 @@ def charts(request):
 def charts_instance(request, exercise_id):
     """Load a chart page for the given exercise"""
     exercise = EXERCISES.get(id=exercise_id)
-    context = {'exercise': exercise}
-    return render(request, 'workout_log/charts_instance.html', context)
+    sets = Set.objects.filter(logged_by=request.user).filter(exercise=exercise)
+    # dates: x-axis
+    dates = []
+    for s in sets:
+        date = s.date
+        if date not in dates:
+            dates.append(date)
+    # weights: y-axis
+    weights = []
+    for date in dates:
+        sum_wt = 0
+        this_dates_sets = sets.filter(date=date)
+        for s in this_dates_sets:
+            sum_wt += s.weight * s.reps
+        avg_wt = sum_wt / len(this_dates_sets)
+        weights.append(avg_wt)
+
+    fig = (px.line(x=dates, y=weights, title=f"{exercise.name}")
+           .update_layout(xaxis_title="Date", yaxis_title="Avg. WT moved per set"))
+    print(fig)
+    fig.show()
+    return redirect('workout_log:charts')
+    # context = {'exercise': exercise}
+    # return render(request, 'workout_log/charts_instance.html', context)
 
 
 @login_required()
