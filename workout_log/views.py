@@ -72,14 +72,16 @@ def charts_instance(request, exercise_id):
         avg_wt = sum_wt / len(this_dates_sets)
         weights.append(avg_wt)
 
+    # temporary fix so the site doesn't break when selecting exercises w/ no data
     if len(dates) == 0 or len(weights) == 0:
         context = {'exercise': exercise}
         return render(request, 'workout_log/charts_instance.html', context)
 
-    fig = (px.line(x=dates, y=weights, title=f"{exercise.name}")
+    fig = (px.line(x=dates, y=weights, title=f"{exercise.name}", markers=True)
            .update_layout(xaxis_title="Date", yaxis_title="Avg. WT moved per set"))
-    print(fig)
     fig.show()
+    fig.write_html(file=f'charts/{request.user.id}-exercise-{exercise.id}.html',
+                   include_plotlyjs='cdn')
     return redirect('workout_log:charts')
     # context = {'exercise': exercise}
     # return render(request, 'workout_log/charts_instance.html', context)
