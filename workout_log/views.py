@@ -44,6 +44,21 @@ def calculate_volume(user, start_date, end_date):
 
 
 @login_required()
+def charts(request):
+    """Load a page where a user can select an exercise to view charts for"""
+    context = {'exercises': EXERCISES}
+    return render(request, 'workout_log/charts.html', context)
+
+
+@login_required()
+def charts_instance(request, exercise_id):
+    """Load a chart page for the given exercise"""
+    exercise = EXERCISES.get(id=exercise_id)
+    context = {'exercise': exercise}
+    return render(request, 'workout_log/charts_instance.html', context)
+
+
+@login_required()
 def delete_set(request, set_id):
     """Delete this set"""
     set = Set.objects.get(id=set_id)

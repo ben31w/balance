@@ -1,0 +1,21 @@
+<!-- Chart selection page for the Workout Log app -->
+
+{% extends 'workout_log/base.html' %}
+
+{% block subcontent %}
+    <h1>My Workout Log</h1>
+    <h2>Charts View</h2>
+    <p>Select an exercise to view charts for.</p>
+
+    {% for exercise in exercises %}
+        <ul>
+            <li>
+                <a href="{% url 'workout_log:charts_instance' exercise.id %}">
+                    {{ exercise }}
+                </a>
+            </li>
+        </ul>
+    {% endfor %}
+
+{% endblock subcontent %}
+
