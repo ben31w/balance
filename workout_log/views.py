@@ -4,7 +4,7 @@ Views for the Workout Log app.
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render, redirect
-import plotly.express as px
+import plotly.graph_objects as go
 
 from .forms import SetForm, WeeklyForm
 from .models import Exercise, Muscle, MuscleWorked, Set
@@ -63,25 +63,39 @@ def charts_instance(request, exercise_id):
         if date not in dates:
             dates.append(date)
     # weights: y-axis
+    # hover_data: formatted strings that display the sets for that date
     weights = []
+    hover_data = []
     for date in dates:
         sum_wt = 0
         this_dates_sets = sets.filter(date=date)
+        sets_str = ""
         for s in this_dates_sets:
-            sum_wt += s.weight * s.reps
+            reps = s.reps
+            wt = s.weight
+            wt_moved = reps * wt
+            sum_wt += wt_moved
+            sets_str += f"{wt_moved:.1f} ({reps}x{wt}), "
         avg_wt = sum_wt / len(this_dates_sets)
         weights.append(avg_wt)
+        hover_data.append(sets_str)
 
     # temporary fix so the site doesn't break when selecting exercises w/ no data
     if len(dates) == 0 or len(weights) == 0:
         context = {'exercise': exercise}
         return render(request, 'workout_log/charts_instance.html', context)
 
-    fig = (px.line(x=dates, y=weights, title=f"{exercise.name}", markers=True)
-           .update_layout(xaxis_title="Date", yaxis_title="Avg. WT moved per set"))
-    filepath = f"charts/{request.user.id}-exercise-{exercise.id}.html"
-    fig.write_html(file=filepath, include_plotlyjs='cdn')
-    context = {'exercise': exercise, 'filepath': filepath}
+    fig = go.Figure(go.Scatter(
+        x=dates,
+        y=weights,
+        hovertemplate='Date: %{x} <br>Weight: %{y:.1f} <br>Sets: %{text}',
+        text=[hover_data[i] for i in range(len(hover_data))]
+    ))
+    fig.show()
+
+    # filepath = f"charts/{request.user.id}-exercise-{exercise.id}.html"
+    # fig.write_html(file=filepath, include_plotlyjs='cdn')
+    context = {'exercise': exercise}#, 'filepath': filepath}
     return render(request, 'workout_log/charts_instance.html', context)
 
 
