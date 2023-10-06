@@ -1,11 +1,20 @@
 <!-- Chart page for a specific exercise in the Workout Log app -->
-
+<!-- filepath = f"workout_log/charts/{request.user.id}-exercise-{exercise.id}.html" -->
+<!-- requestURL:  http://127.0.0.1:8000/workout_log/charts/31/workout_log/charts/1-exercise-31.html  -->
 {% extends 'workout_log/base.html' %}
 
 {% block subcontent %}
     <h1>My Workout Log</h1>
     <h2>Charts View</h2>
     <p>{{ exercise }}</p>
+    <iframe
+            src="{{ filepath }}"
+            width="900"
+            height="600"
+    >
+
+    </iframe>
+
 
 {% endblock subcontent %}
 

@@ -132,3 +132,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # My settings
 # The login page that all views redirect to if they specify @login_required
 LOGIN_URL = "users:login"
+
+# Enable iframes to be loaded
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+

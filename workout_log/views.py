@@ -79,12 +79,10 @@ def charts_instance(request, exercise_id):
 
     fig = (px.line(x=dates, y=weights, title=f"{exercise.name}", markers=True)
            .update_layout(xaxis_title="Date", yaxis_title="Avg. WT moved per set"))
-    fig.show()
-    fig.write_html(file=f'charts/{request.user.id}-exercise-{exercise.id}.html',
-                   include_plotlyjs='cdn')
-    return redirect('workout_log:charts')
-    # context = {'exercise': exercise}
-    # return render(request, 'workout_log/charts_instance.html', context)
+    filepath = f"charts/{request.user.id}-exercise-{exercise.id}.html"
+    fig.write_html(file=filepath, include_plotlyjs='cdn')
+    context = {'exercise': exercise, 'filepath': filepath}
+    return render(request, 'workout_log/charts_instance.html', context)
 
 
 @login_required()
