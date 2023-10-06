@@ -1,6 +1,0 @@
-# This directory is where the charts generates from Plotly will be saved.
-
-# Ignore everything in this directory
-*
-# Except this file
-!.gitignore
