@@ -10,7 +10,7 @@
     {% for exercise in exercises %}
         <ul>
             <li>
-                <a href="{% url 'workout_log:charts_instance' exercise.id %}">
+                <a href="{% url 'workout_log:charts_instance' user.id exercise.id %}">
                     {{ exercise }}
                 </a>
             </li>

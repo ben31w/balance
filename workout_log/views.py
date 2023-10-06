@@ -47,15 +47,15 @@ def calculate_volume(user, start_date, end_date):
 @login_required()
 def charts(request):
     """Load a page where a user can select an exercise to view charts for"""
-    context = {'exercises': EXERCISES}
+    context = {'exercises': EXERCISES, 'user': request.user}
     return render(request, 'workout_log/charts.html', context)
 
 
 @login_required()
-def charts_instance(request, exercise_id):
+def charts_instance(request, user_id, exercise_id):
     """Load a chart page for the given exercise"""
     exercise = EXERCISES.get(id=exercise_id)
-    sets = Set.objects.filter(logged_by=request.user).filter(exercise=exercise)
+    sets = Set.objects.filter(logged_by=user_id).filter(exercise=exercise)
     # dates: x-axis
     dates = []
     for s in sets:
@@ -80,7 +80,7 @@ def charts_instance(request, exercise_id):
         weights.append(avg_wt)
         hover_data.append(sets_str)
 
-    # temporary fix so the site doesn't break when selecting exercises w/ no data
+    # return w/o creating a chart if the user hasn't logged any sets for this exercise
     if len(dates) == 0 or len(weights) == 0:
         context = {'exercise': exercise}
         return render(request, 'workout_log/charts_instance.html', context)
@@ -91,12 +91,15 @@ def charts_instance(request, exercise_id):
         hovertemplate='Date: %{x} <br>Weight: %{y:.1f} <br>Sets: %{text}',
         text=[hover_data[i] for i in range(len(hover_data))]
     ))
-    fig.show()
-
-    # filepath = f"charts/{request.user.id}-exercise-{exercise.id}.html"
-    # fig.write_html(file=filepath, include_plotlyjs='cdn')
-    context = {'exercise': exercise}#, 'filepath': filepath}
-    return render(request, 'workout_log/charts_instance.html', context)
+    fig.update_layout(
+        title=f"{exercise.name} - Progressive Overload",
+        xaxis_title='Date',
+        yaxis_title='Average weight moved per set')
+    # file arg is relative to 'balance/'
+    fig.write_html(file=f"workout_log/templates/charts/{user_id}-{exercise_id}",
+                   include_plotlyjs='cdn')
+    # template_name arg is relative to 'balance/workout_log/templates/'
+    return render(request, f'charts/{user_id}-{exercise_id}')
 
 
 @login_required()
