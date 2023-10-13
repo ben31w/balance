@@ -18,9 +18,14 @@ fitness fun and easy.
 # Project Structure
 Balance is built using Django, a Python web development framework. 
 A Django project is composed of apps that serve a specific function.
-The structure for this project can be summarized as follows:
+
+Root directory folders:
 - `balance`: contains settings and URL configurations for the entire project
 - `commons`: app containing resources that are shared throughout all the 
 other apps, like a base.html for other pages to inherit from
 - `users`: app containing user authentication files
 - `workout_log`: app for the Workout Log files
+
+Root directory files:
+- `manage.py`: created by Django for development use
+- `requirements.txt`: list of pip packages required for this project
