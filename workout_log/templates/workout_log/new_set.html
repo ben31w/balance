@@ -8,6 +8,7 @@
 <form method="post" action="{% url 'workout_log:new_set' %}">
     {% csrf_token %}
     {{ form.as_p }}
-    <button name="submit">Log set</button>
+    <button type="submit" name="submit">Save</button>
+    <button type="submit" name="another">Save + Log another set</button>
 </form>
 {% endblock subcontent %}

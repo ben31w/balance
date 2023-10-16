@@ -17,6 +17,7 @@ class SetForm(forms.ModelForm):
         # This can probably be done with formsets:
         # https://docs.djangoproject.com/en/4.2/topics/forms/modelforms/
         fields = ['date', 'exercise', 'reps', 'weight']
+        widgets = {'date': forms.SelectDateWidget()}
 
 
 class WeeklyForm(forms.Form):

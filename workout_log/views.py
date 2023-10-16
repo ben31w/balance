@@ -157,6 +157,10 @@ def new_set(request):
             # insert set behind all existing sets on this date by default
             this_set.index = len(sets)
             this_set.save()
+
+            if "another" in request.POST:
+                return redirect('workout_log:new_set')
+
             return redirect('workout_log:index')
     else:
         form = SetForm()
