@@ -1,4 +1,4 @@
-<!-- Weekly View page for the Workout Log app -->
+<!-- Volume Manager page for the Workout Log app -->
 
 {% extends 'workout_log/base.html' %}
 
@@ -6,7 +6,7 @@
     <h1>My Workout Log</h1>
     <h2>Volume Manager</h2>
 
-    <form method="post" action="{% url 'workout_log:weekly' %}">
+    <form method="post" action="{% url 'workout_log:volume' %}">
         {% csrf_token %}
         {{ form.as_p }}
     <button name="submit">Submit</button>

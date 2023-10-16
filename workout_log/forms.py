@@ -20,10 +20,10 @@ class SetForm(forms.ModelForm):
         widgets = {'date': forms.SelectDateWidget()}
 
 
-class WeeklyForm(forms.Form):
+class VolumeManagerForm(forms.Form):
     """
     Form on where the user can adjust the start and end dates for the Volume
-    Manager in the Weekly View
+    Manager
     """
     start_date = forms.DateField(label="Start date")
     end_date = forms.DateField(label="End date")

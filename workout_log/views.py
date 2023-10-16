@@ -6,7 +6,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 import plotly.graph_objects as go
 
-from .forms import SetForm, WeeklyForm
+from .forms import SetForm, VolumeManagerForm
 from .models import Exercise, Muscle, MuscleWorked, Set
 
 EXERCISES = Exercise.objects.order_by("name")
@@ -200,12 +200,12 @@ def verify_user_is_owner(owner, user):
 
 
 @login_required()
-def weekly(request):
-    """Load the Weekly View page"""
+def volume(request):
+    """Load the Volume Manager page"""
     # TODO maybe this can be changed to GET, since it isn't updating the
     #  state the of the database.
     if request.method == 'POST':
-        form = WeeklyForm(data=request.POST)
+        form = VolumeManagerForm(data=request.POST)
         if form.is_valid():
             start_date = form.cleaned_data["start_date"]
             end_date = form.cleaned_data["end_date"]
@@ -216,11 +216,11 @@ def weekly(request):
                 'end_date': end_date,
                 'volume_dict': volume_dict
             }
-            return render(request, 'workout_log/weekly.html', context)
+            return render(request, 'workout_log/volume.html', context)
     else:
-        form = WeeklyForm()
+        form = VolumeManagerForm()
 
     context = {'form': form}
-    return render(request, 'workout_log/weekly.html', context)
+    return render(request, 'workout_log/volume.html', context)
 
 

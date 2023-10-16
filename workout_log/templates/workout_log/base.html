@@ -1,7 +1,7 @@
 <!--
 Base template for the Workout Log app
 Inherit from overall base template, and define a Workout Log navbar with
-links to the daily, weekly, journal, and char views.
+links to the daily, volume, journal, and char views.
 -->
 
 {% extends 'commons/base.html' %}
@@ -14,7 +14,7 @@ links to the daily, weekly, journal, and char views.
   <p>
     <strong>Views: </strong>
     <a href="{% url 'workout_log:index' %}">Daily</a> -
-    <a href="{% url 'workout_log:weekly' %}">Weekly</a> -
+    <a href="{% url 'workout_log:volume' %}">Volume</a> -
     <a href="#">Journal</a> -
     <a href="{% url 'workout_log:charts' %}">Charts</a>
   </p>
