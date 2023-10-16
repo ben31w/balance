@@ -3,5 +3,5 @@ balance_env/
 .idea/
 __pycache__/
 *.sqlite3
-staticfiles/
+static/
 workout_log/migrations/

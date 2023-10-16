@@ -45,14 +45,8 @@ class Exercise(models.Model):
     equipment = models.CharField(max_length=2, choices=EQUIPMENT_CHOICES)
     created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
-    # Check that this exercise doesn't already exist before saving it.
-    #  Unfortunately this interferes with trying to edit an exercise.
-    #  Can this be done through Django constraints instead?
-    def clean(self):
-        for exercise in Exercise.objects.all():
-            if self.__str__().lower() == exercise.__str__().lower():
-                raise ValidationError('An exercise with identical name and '
-                                      'equipment already exists.')
+    class Meta:
+        unique_together = ["name", "equipment"]
 
     def __str__(self):
         return f"{self.name} ({self.equipment})"
