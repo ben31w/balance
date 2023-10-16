@@ -145,10 +145,32 @@ def index(request):
 
 
 @login_required()
-def new_set(request):
-    """Load a page where a user can log a new set"""
-    if request.method == 'POST':
-        form = SetForm(data=request.POST)
+def new_set(request, set_id):
+    """
+    Load a page where a user can log a new set.
+    Parameter set_id is used to pre-populate the new set form with data
+    from an existing set. This is a convenience feature to support the
+    'save and log another' button. Note: if the user is adding a new set
+    independent of other sets, then set_id is arbitrarily set to 0.
+    """
+    # Verify user owns the set that is populating this form
+    if set_id != 0:
+        set = Set.objects.get(id=set_id)
+        owner = set.logged_by
+        verify_user_is_owner(owner, request.user)
+
+    # GET requests, initialize form without submitting
+    if request.method != 'POST' and set_id == 0:
+        form = SetForm()
+    elif request.method != 'POST' and set_id != 0:
+        form = SetForm(instance=set)
+    # POST request, check if data is valid and submit
+    else:
+        if set_id == 0:
+            form = SetForm(data=request.POST)
+        else:
+            form = SetForm(data=request.POST, instance=set)
+
         if form.is_valid():
             this_set = form.save(commit=False)
             this_set.logged_by = request.user
@@ -158,13 +180,12 @@ def new_set(request):
             this_set.index = len(sets)
             this_set.save()
 
-            if "another" in request.POST:
-                return redirect('workout_log:new_set')
+            # if the user hits submit, redirect to workout log.
+            # if user hits submit + log again, this block is skipped
+            if "submit" in request.POST:
+                return redirect('workout_log:index')
 
-            return redirect('workout_log:index')
-    else:
-        form = SetForm()
-    context = {'form': form}
+    context = {'form': form, 'set_id': set_id}
     return render(request, 'workout_log/new_set.html', context)
 
 

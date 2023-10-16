@@ -5,10 +5,10 @@
 {% block subcontent %}
 <h1>Add a new set</h1>
 
-<form method="post" action="{% url 'workout_log:new_set' %}">
+<form method="post" action="{% url 'workout_log:new_set' set_id %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" name="submit">Save</button>
-    <button type="submit" name="another">Save + Log another set</button>
+    <button type="submit" name="submit_and_reload">Save + Log another set</button>
 </form>
 {% endblock subcontent %}
