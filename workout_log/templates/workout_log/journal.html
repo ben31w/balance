@@ -1,0 +1,24 @@
+<!-- Journal page for the Workout Log app -->
+
+{% extends 'workout_log/base.html' %}
+
+{% block subcontent %}
+    <h1>My Workout Log</h1>
+    <h2>Journal View</h2>
+    {% for date, val in date_dict.items %}
+        <h3>{{ date }}</h3>
+        <ul>
+            {% for exercise, sets in val.items %}
+                <li>{{ exercise }}</li>
+                <ul>
+                    <li>{{ sets }}</li>
+                </ul>
+            {% endfor %}
+        </ul>
+
+    {% empty %}
+        <p>You haven't logged any sets yet.</p>
+    {% endfor %}
+
+{% endblock subcontent %}
+

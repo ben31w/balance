@@ -145,6 +145,39 @@ def index(request):
 
 
 @login_required()
+def journal(request):
+    """Load the Workout Log Journal page."""
+    sets = Set.objects.filter(logged_by=request.user).order_by("date")
+    # keys = dates. values = dictionary that maps exercises to sets.
+    # ex:
+    # "Oct 16": {
+    #               "Squats": [set,set,set,set]
+    #               "Calf raises": [set,set,set]
+    #           }
+    # "Oct 15": {
+    #               "Bench press": [set,set,set]
+    #           }
+    date_dict = dict()
+    for s in sets:
+        date = s.date
+        if date not in date_dict.keys():
+            date_dict[f"{date}"] = dict()
+    for s in sets:
+        date = s.date
+        exercise = s.exercise
+        exercise_dict = date_dict[f"{date}"]
+        print(f"{date}: {exercise_dict}")
+        # these if statements aren't working
+        if exercise not in exercise_dict.keys():
+            exercise_dict[f"{exercise}"] = [s]
+        else:
+            exercise_dict[f"{exercise}"].append(s)
+
+    context = {'sets': sets, 'date_dict': date_dict}
+    return render(request, 'workout_log/journal.html', context)
+
+
+@login_required()
 def new_set(request, set_id):
     """
     Load a page where a user can log a new set.
