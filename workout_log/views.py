@@ -119,14 +119,13 @@ def edit_set(request, set_id):
     owner = set.logged_by
     verify_user_is_owner(owner, request.user)
 
-    # Load form prefilled with data from this set (instance=set)
-    if request.method == 'GET':
-        form = SetForm(instance=set)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         form = SetForm(instance=set, data=request.POST)
         if form.is_valid():
             form.save()
             return redirect('workout_log:index')
+    else:
+        form = SetForm(instance=set)
     context = {'form': form, 'set': set}
     return render(request, 'workout_log/edit_set.html', context)
 
@@ -148,9 +147,7 @@ def index(request):
 @login_required()
 def new_set(request):
     """Load a page where a user can log a new set"""
-    if request.method == 'GET':
-        form = SetForm()
-    elif request.method == 'POST':
+    if request.method == 'POST':
         form = SetForm(data=request.POST)
         if form.is_valid():
             this_set = form.save(commit=False)
@@ -161,6 +158,8 @@ def new_set(request):
             this_set.index = len(sets)
             this_set.save()
             return redirect('workout_log:index')
+    else:
+        form = SetForm()
     context = {'form': form}
     return render(request, 'workout_log/new_set.html', context)
 
@@ -178,9 +177,9 @@ def verify_user_is_owner(owner, user):
 @login_required()
 def weekly(request):
     """Load the Weekly View page"""
-    if request.method == 'GET':
-        form = WeeklyForm()
-    elif request.method == 'POST':
+    # TODO maybe this can be changed to GET, since it isn't updating the
+    #  state the of the database.
+    if request.method == 'POST':
         form = WeeklyForm(data=request.POST)
         if form.is_valid():
             start_date = form.cleaned_data["start_date"]
@@ -193,6 +192,8 @@ def weekly(request):
                 'volume_dict': volume_dict
             }
             return render(request, 'workout_log/weekly.html', context)
+    else:
+        form = WeeklyForm()
 
     context = {'form': form}
     return render(request, 'workout_log/weekly.html', context)
