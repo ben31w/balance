@@ -9,10 +9,15 @@
         <h3>{{ date }}</h3>
         <ul>
             {% for exercise, sets in val.items %}
-                <li>{{ exercise }}</li>
-                <ul>
-                    <li>{{ sets }}</li>
-                </ul>
+                <li>
+                    {{ exercise }}:
+                    <ul><li>
+                        {% for set in sets %}
+                            {{ set.reps }} at {{ set.weight }}, 
+                        {% endfor %}
+                    </li></ul>
+
+                </li>
             {% endfor %}
         </ul>
 
