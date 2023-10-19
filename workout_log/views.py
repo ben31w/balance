@@ -166,9 +166,7 @@ def journal(request):
         date = s.date
         exercise = s.exercise
         exercise_dict = date_dict[f"{date}"]
-        print(f"{date}: {exercise_dict}")
-        # these if statements aren't working
-        if exercise not in exercise_dict.keys():
+        if exercise.__str__() not in exercise_dict.keys():
             exercise_dict[f"{exercise}"] = [s]
         else:
             exercise_dict[f"{exercise}"].append(s)
