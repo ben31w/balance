@@ -23,10 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # These values are stored as environment variables on Digital Ocean 
 #  App Platform. Note that they are read as strings, then converted to 
 #  boolean/lists if necessary
-DEBUG = os.getenv('DEBUG', "False") == "True"
+
+# DEBUG = os.getenv('DEBUG', "False") == "True"  # For production
+DEBUG = os.getenv('DEBUG', "True") == "True"  # For development
 SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+# DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"  # For production
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"  # For development
 
 # Application definition
 
@@ -129,7 +132,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
