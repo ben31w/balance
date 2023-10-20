@@ -1,10 +1,18 @@
 <!-- Home page for the Workout Log app -->
 
 {% extends 'workout_log/base.html' %}
+{% load static %}
 
 {% block subcontent %}
     <h1>My Workout Log</h1>
     <h2>Daily View</h2>
+
+    <p>
+        <button type="button" onclick="decDate()">&lt</button>
+        <!-- date label's text is initialized dynamically by JS -->
+        <span id="date-label" style="font-family: monospace; font-size: 2em;"></span>
+        <button type="button" onclick="incDate()">&gt</button>
+    </p>
 
     {% for date in dates %}
         <h3>{{ date }}</h3>
@@ -30,3 +38,6 @@
 
 {% endblock subcontent %}
 
+{% block scripts %}
+    <script src="{% static 'workout_log/index.js' %}"></script>
+{% endblock scripts %}

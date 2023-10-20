@@ -3,5 +3,6 @@ balance_env/
 .idea/
 __pycache__/
 *.sqlite3
-static/
+# only ignore root static directory, not static directory for individual apps
+/static/
 workout_log/migrations/

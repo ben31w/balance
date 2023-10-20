@@ -130,9 +130,20 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+# STATICFILES_DIRS: list of directories where Django will look
+#   for static files
+# STATIC_URL: the URL that static files should be served under.
+#  In development, Django will automatically serve files from
+#  STATIC_ROOT at STATIC_URL. In production, it's up to you to
+#  configure your server to do so.
+# STATIC_ROOT: where collectstatic will copy all static files to
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATICFILES_DIRS = [
+    BASE_DIR / 'commons/static/',
+    BASE_DIR / 'workout_log/static/',
+]
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
