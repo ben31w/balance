@@ -63,6 +63,13 @@ def charts_instance(request, user_id, exercise_id):
         date = s.date
         if date not in dates:
             dates.append(date)
+    dates.sort()
+
+    # return w/o creating a chart if the user hasn't logged any sets for this exercise
+    if len(dates) == 0:
+        context = {'exercise': exercise}
+        return render(request, 'workout_log/charts_instance.html', context)
+
     # weights: y-axis
     # hover_data: formatted strings that display the sets for that date
     weights = []
@@ -80,11 +87,6 @@ def charts_instance(request, user_id, exercise_id):
         avg_wt = sum_wt / len(this_dates_sets)
         weights.append(avg_wt)
         hover_data.append(sets_str)
-
-    # return w/o creating a chart if the user hasn't logged any sets for this exercise
-    if len(dates) == 0 or len(weights) == 0:
-        context = {'exercise': exercise}
-        return render(request, 'workout_log/charts_instance.html', context)
 
     fig = go.Figure(go.Scatter(
         x=dates,
