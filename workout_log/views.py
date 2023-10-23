@@ -135,10 +135,12 @@ def edit_set(request, set_id):
 def index(request):
     """Load the Workout Log home page (Daily view)."""
     sets = Set.objects.filter(logged_by=request.user).order_by("index")
-    # serialize the sets into JSON objects so they can be processed by JavaScript
+    # serialize the sets and exerises into JSON objects so they 
+    #  can be processed by JavaScript
     data = serializers.serialize("json", sets)
+    serialized_exercises = serializers.serialize("json", EXERCISES)
 
-    context = {'data': data}
+    context = {'data': data, 'exercises': serialized_exercises}
     return render(request, 'workout_log/index.html', context)
 
 

@@ -25,11 +25,14 @@
 {% endblock subcontent %}
 
 {% block scripts %}
-    {{ dates|json_script:"dates-list" }}
     <script>
+        // when parsing JSON objects, the encoded quotes need to be replaced with
+        //  regular quotes
         // data = list of user's sets as an array of JSON objects
-        // need to replace some encoded quotes with regular quotes
         let data = JSON.parse("{{data}}".replace(/&quot;/g,'"'));
+
+        // exercises = list of exercises as an array of JSON objects
+        let exercises = JSON.parse("{{exercises}}".replace(/&quot;/g,'"'));
 
         // initialize dateLabel's text when this script loads
         let dateLabel = document.getElementById("date-label");
@@ -60,15 +63,14 @@
 
             for (let i=0; i<data.length; i++) {
                 // Python and JavaScript's date objects are off by one
-                let dateOfSet = new Date(data[i]["fields"]["date"]);
+                let set = data[i];
+                let dateOfSet = new Date(set["fields"]["date"]);
                 dateOfSet.setDate(dateOfSet.getDate() + 1);
 
                 // compare date strings so time doesn't get compared.
                 if (dateOfSet.toDateString() == date.toDateString()) {
                     let newLi = document.createElement("li");
-                    // TODO set innerHTML to the output of parseJSONSet
-                    newLi.innerHTML = dateOfSet;
-                    parseJSONSet(data[i]);
+                    newLi.innerHTML = parseJSONSet(set);;
                     exerciseList.appendChild(newLi);
                 }
             }
@@ -83,14 +85,23 @@
 
 
         function parseJSONSet(set) {
-            // convert set from JSON object to a string, and return the string.
+            // given a set as a JSON object, convert it to a string so it can be displayed.
             let fields = set["fields"];
-            // TODO: get exercise name
-            let exercise = fields["exercise"];  // pk of exercise 
+            // convert exercise PK to exercise name
+            let exercise = getExerciseName(fields["exercise"]);
             let reps = fields["reps"];
             let weight = fields["weight"];
+            return `${exercise}: ${reps} at ${weight} lbs`;
+        }
 
-            console.log(`${exercise}: ${reps} at ${weight} lbs`);
+
+        function getExerciseName(exerciseId) {
+            for (let i=0; i<exercises.length; i++) {
+                let exercise = exercises[i];
+                if (exercise["pk"] == exerciseId) {
+                    return exercise["fields"]["name"];
+                }
+            }
         }
 
     </script>
