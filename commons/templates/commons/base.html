@@ -15,6 +15,7 @@ is logged in. The content after the navbar is custom to each page.
     <p>
         <a href="{% url 'commons:index' %}">Home</a> -
         <a href="{% url 'workout_log:index' %}">Workout Log</a> -
+        <a href="{% url 'nutrition_log:index' %}">Nutrition Log</a> -
         {% if user.is_authenticated %}
             Hello, {{ user.username }}. -
             <a href="{% url 'users:logout' %}">Log out</a>

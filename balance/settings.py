@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'commons',
     'users',
     'workout_log',
+    'nutrition_log',
 
     # Default Django apps
     'django.contrib.admin',
