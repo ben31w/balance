@@ -14,23 +14,9 @@
         <button type="button" onclick="incDate()">&gt</button>
     </p>
 
-    {% for date in dates %}
-        <h3>{{ date }}</h3>
-        {% for set in sets %}
-            {% if set.date == date %}
-            <ul>
-                <li>
-                    {{ set.exercise }}, {{ set.reps}} reps at {{ set.weight }} lbs |
-                    <a href="{% url 'workout_log:edit_set' set.id %}">edit</a> |
-                    <a href="{% url 'workout_log:delete_set' set.id %}">delete</a> |
-                    move
-                </li>
-            </ul>
-            {% endif %}
-        {% endfor %}
-    {% empty %}
-        <p>You haven't logged any sets yet.</p>
-    {% endfor %}
+    <!-- exercise list populated dynamically by JS -->
+    <ul id="exercise-list"></ul>
+
 
     <a href="{% url 'workout_log:new_set' 0 %}">
         Add a new set
@@ -39,5 +25,73 @@
 {% endblock subcontent %}
 
 {% block scripts %}
-    <script src="{% static 'workout_log/index.js' %}"></script>
+    {{ dates|json_script:"dates-list" }}
+    <script>
+        // data = list of user's sets as an array of JSON objects
+        // need to replace some encoded quotes with regular quotes
+        let data = JSON.parse("{{data}}".replace(/&quot;/g,'"'));
+
+        // initialize dateLabel's text when this script loads
+        let dateLabel = document.getElementById("date-label");
+        let today = new Date("2023-10-16");
+        dateLabel.innerHTML = today.toDateString();
+        filterExercisesByDate(today);
+
+        
+        function decDate() {
+            let date = new Date(dateLabel.innerHTML);
+            let newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+            dateLabel.innerHTML = newDate.toDateString();
+            filterExercisesByDate(newDate);
+        }
+
+
+        function incDate() {
+            let date = new Date(dateLabel.innerHTML);
+            let newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+            dateLabel.innerHTML = newDate.toDateString();
+            filterExercisesByDate(newDate);
+        }
+
+
+        function filterExercisesByDate(date) {
+            exerciseList = document.getElementById("exercise-list");
+            removeAllChildNodes(exerciseList);
+
+            for (let i=0; i<data.length; i++) {
+                // Python and JavaScript's date objects are off by one
+                let dateOfSet = new Date(data[i]["fields"]["date"]);
+                dateOfSet.setDate(dateOfSet.getDate() + 1);
+
+                // compare date strings so time doesn't get compared.
+                if (dateOfSet.toDateString() == date.toDateString()) {
+                    let newLi = document.createElement("li");
+                    // TODO set innerHTML to the output of parseJSONSet
+                    newLi.innerHTML = dateOfSet;
+                    parseJSONSet(data[i]);
+                    exerciseList.appendChild(newLi);
+                }
+            }
+        }
+
+
+        function removeAllChildNodes(parentNode) {
+            while (parentNode.firstChild) {
+                parentNode.removeChild(parentNode.firstChild);
+            }
+        }
+
+
+        function parseJSONSet(set) {
+            // convert set from JSON object to a string, and return the string.
+            let fields = set["fields"];
+            // TODO: get exercise name
+            let exercise = fields["exercise"];  // pk of exercise 
+            let reps = fields["reps"];
+            let weight = fields["weight"];
+
+            console.log(`${exercise}: ${reps} at ${weight} lbs`);
+        }
+
+    </script>
 {% endblock scripts %}

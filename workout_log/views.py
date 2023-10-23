@@ -2,6 +2,7 @@
 Views for the Workout Log app.
 """
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from django.http import Http404
 from django.shortcuts import render, redirect
 import plotly.graph_objects as go
@@ -134,13 +135,10 @@ def edit_set(request, set_id):
 def index(request):
     """Load the Workout Log home page (Daily view)."""
     sets = Set.objects.filter(logged_by=request.user).order_by("index")
-    dates = []
-    for s in sets:
-        date = s.date
-        if date not in dates:
-            dates.append(date)
-    dates.sort(reverse=True)
-    context = {'sets': sets, 'dates': dates}
+    # serialize the sets into JSON objects so they can be processed by JavaScript
+    data = serializers.serialize("json", sets)
+
+    context = {'data': data}
     return render(request, 'workout_log/index.html', context)
 
 

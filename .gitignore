@@ -5,4 +5,5 @@ __pycache__/
 *.sqlite3
 # only ignore root static directory, not static directory for individual apps
 /static/
+.vscode/
 workout_log/migrations/
