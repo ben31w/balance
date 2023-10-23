@@ -7,6 +7,12 @@
     <h1>My Workout Log</h1>
     <h2>Daily View</h2>
 
+    <form action="javascript:setDate(date.value)">
+        Enter a date:
+        <input type="date" id="date">
+        <input type="submit" value="Submit">
+    </form>
+
     <p>
         <button type="button" onclick="decDate()">&lt</button>
         <!-- date label's text is initialized dynamically by JS -->
@@ -52,6 +58,21 @@
         function incDate() {
             let date = new Date(dateLabel.innerHTML);
             let newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+            dateLabel.innerHTML = newDate.toDateString();
+            filterExercisesByDate(newDate);
+        }
+
+
+        function setDate(dateString) {
+            // given a dateString ("yyyy-mm-dd"), filter the exercise list to match
+            // the date.
+            // unfortunately, constructing a date directly from dateString results in 
+            //  the day being off by one. Deconstructing the string works fine.
+            let parts = dateString.split("-");
+            let y = Number(parts[0]);
+            let m = Number(parts[1]) - 1;
+            let d = Number(parts[2]);
+            let newDate = new Date(y, m, d);
             dateLabel.innerHTML = newDate.toDateString();
             filterExercisesByDate(newDate);
         }
