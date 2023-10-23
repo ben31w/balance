@@ -9,4 +9,5 @@ app_name = 'nutrition_log'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('daily', views.daily, name='daily'),
 ]

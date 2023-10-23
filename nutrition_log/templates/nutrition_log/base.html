@@ -1,0 +1,22 @@
+<!--
+Base template for the Nutrition Log app
+Inherit from overall base template, and define a Nutrition Log navbar with
+links to the summary, daily, weekly, and charts views.
+-->
+
+{% extends 'commons/base.html' %}
+
+{% block title %}
+    Nutrition Log
+{% endblock title %}
+
+{% block content %}
+  <p>
+    <strong>Views: </strong>
+    <a href="{% url 'nutrition_log:index' %}">Summary</a> -
+    <a href="{% url 'nutrition_log:daily' %}">Daily</a> - Weekly - Charts
+  </p>
+
+  <!-- Content of children -->
+  {% block subcontent %}{% endblock subcontent %}
+{% endblock content %}
