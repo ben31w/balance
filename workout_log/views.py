@@ -149,7 +149,7 @@ def index(request):
 @login_required()
 def journal(request):
     """Load the Workout Log Journal page."""
-    sets = Set.objects.filter(logged_by=request.user).order_by("date")
+    sets = Set.objects.filter(logged_by=request.user).order_by("-date")
     # keys = dates. values = dictionary that maps exercises to sets.
     # ex:
     # "Oct 16": {
