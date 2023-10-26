@@ -79,7 +79,7 @@
 
 
         function filterExercisesByDate(date) {
-            exerciseList = document.getElementById("exercise-list");
+            let exerciseList = document.getElementById("exercise-list");
             removeAllChildNodes(exerciseList);
 
             for (let i=0; i<data.length; i++) {
