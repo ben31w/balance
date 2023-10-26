@@ -1,5 +1,135 @@
+<!-- Daily page for the Nutrition Log app -->
 {% extends 'nutrition_log/base.html' %}
 
 {% block subcontent %}
     <h1>My Nutrition Log</h1>
+    <h2>Daily View</h2>
+
+
+    <!-- Date picker-->
+    <form action="javascript:setDate(date.value)">
+        Enter a date:
+        <input type="date" id="date">
+        <input type="submit" value="Submit">
+    </form>
+    <p>
+        <button type="button" onclick="decDate()">&lt</button>
+        <!-- date label's text is initialized dynamically by JS -->
+        <span id="date-label" style="font-family: monospace; font-size: 2em;"></span>
+        <button type="button" onclick="incDate()">&gt</button>
+    </p>
+
+
+    <!-- logged weight for the day: populated by JS-->
+    <p>
+        Weight: 
+        <span id="daily-weight-label"></span>
+    </p>
+
+
+    <!-- Input for user's daily weight -->
+    <form method="post" action="{% url 'nutrition_log:daily' %}">
+        {% csrf_token %}
+        <!-- {{ form.as_p }} -->
+        <!-- <button name="submit">Save weight</button> -->
+    </form>
+
+
+    <!-- food item list populated dynamically by JS -->
+    <ul id="food-item-list"></ul>
 {% endblock subcontent %}
+
+{% block scripts %}
+    <script>
+        // when parsing JSON objects, the encoded quotes need to be replaced with
+        //  regular quotes
+        // dailyWeights = list of user's daily weights as an array of JSON objects
+        let dailyWeights = JSON.parse("{{daily_weights}}".replace(/&quot;/g,'"'));
+
+
+        // initialize dateLabel's text when this script loads
+        let dateLabel = document.getElementById("date-label");
+        let today = new Date();
+        dateLabel.innerHTML = today.toDateString();
+        filterFoodItemsByDate(today);
+        filterDailyWeights(today);
+
+        
+        function decDate() {
+            let date = new Date(dateLabel.innerHTML);
+            let newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+            dateLabel.innerHTML = newDate.toDateString();
+            filterFoodItemsByDate(newDate);
+            filterDailyWeights(newDate);
+        }
+
+
+        function incDate() {
+            let date = new Date(dateLabel.innerHTML);
+            let newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+            dateLabel.innerHTML = newDate.toDateString();
+            filterFoodItemsByDate(newDate);
+            filterDailyWeights(newDate);
+        }
+
+
+        function setDate(dateString) {
+            // given a dateString ("yyyy-mm-dd"), filter the exercise list to match
+            // the date.
+            // unfortunately, constructing a date directly from dateString results in 
+            //  the day being off by one. Deconstructing the string works fine.
+            let parts = dateString.split("-");
+            let y = Number(parts[0]);
+            let m = Number(parts[1]) - 1;
+            let d = Number(parts[2]);
+            let newDate = new Date(y, m, d);
+            dateLabel.innerHTML = newDate.toDateString();
+            filterFoodItemsByDate(newDate);
+            filterDailyWeights(newDate);
+        }
+
+
+        function filterDailyWeights(date) {
+            // given a date, update the daily weight label to display the 
+            // appropriate weight for that date.
+            let label = document.getElementById("daily-weight-label");
+            removeAllChildNodes(label);
+
+            for (let i=0; i<dailyWeights.length; i++) {
+                let fields = dailyWeights[i]["fields"];
+
+                // compare using toJSONDateString for consistent format
+                if (fields["date"] == toJSONDateString(date)) {
+                    label.innerHTML = fields["weight"]
+                    return;
+                }
+            }
+            label.innerHTML = "You haven't logged your weight today"
+        }
+
+
+        function filterFoodItemsByDate(date) {
+            // TODO
+        }
+
+
+        function toJSONDateString(JSDateObj) {
+            // convert JavaScript Date object to JSON's date string format
+            // (yyyy-mm-dd)
+            // note: JS month indexing starts at 0, so it's off by one compared
+            // to JSON
+            // Months and dates need to be zero-padded if they are single-digit
+            let y = JSDateObj.getFullYear();
+            let m = String(JSDateObj.getMonth() + 1).padStart(2, '0');
+            let d = String(JSDateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+
+        function removeAllChildNodes(parentNode) {
+            while (parentNode.firstChild) {
+                parentNode.removeChild(parentNode.firstChild);
+            }
+        }
+    </script>
+{% endblock scripts %}
