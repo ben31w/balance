@@ -8,6 +8,9 @@ class DailyWeight(models.Model):
     weight = models.FloatField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.user.username} | {self.date} | {self.weight}"
+
 
 class FoodItem(models.Model):
     """A food item that a user can log"""
