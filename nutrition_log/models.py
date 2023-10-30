@@ -4,6 +4,7 @@ from django.db import models
 
 class DailyWeight(models.Model):
     """A weight that a user can log for the day"""
+    # TODO maybe validate that weight > 0
     date = models.DateField()
     weight = models.FloatField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)

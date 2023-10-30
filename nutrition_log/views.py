@@ -49,6 +49,13 @@ def set_weight(request):
             try:
                 old_weight = DailyWeight.objects.filter(user=request.user).get(date=new_weight.date)
                 # An instance with this date exists, so edit it
+                
+                # If the user entered 0, they are trying to remove the weight they entered
+                if new_weight.weight == 0:
+                    old_weight.delete()
+                    return redirect('nutrition_log:daily')
+                
+                # Otherwise update the weight
                 old_weight.weight = new_weight.weight
                 old_weight.save()
                 return redirect('nutrition_log:daily')

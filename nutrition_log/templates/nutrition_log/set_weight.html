@@ -5,6 +5,11 @@
 {% block subcontent %}
     <h1>Log daily weight</h1>
 
+    <p>
+        Enter your weight on the scale from this morning, or enter '0'
+        to reset the weight.
+    </p>
+
     <form method="post" action="{% url 'nutrition_log:set_weight' %}">
         {% csrf_token %}
         {{ form.as_p }}
