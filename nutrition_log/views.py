@@ -39,27 +39,26 @@ def index(request):
 @login_required
 def set_weight(request):
     """Load a page where user can enter their daily weight"""
-    try:
-        daily_weight = DailyWeight.objects.filter(user=request.user).get(date=date.today())
-        if request.method == 'POST':
-            form = DailyWeightForm(instance=daily_weight, data=request.POST)
-            if form.is_valid():
-                daily_weight = form.save(commit=False)
-                daily_weight.user = request.user
-                daily_weight.save()
+    if request.method == 'POST':
+        form = DailyWeightForm(data=request.POST)
+        if form.is_valid():
+            new_weight = form.save(commit=False)
+            # Before saving this instance, we need to check if an instance with
+            #  this date already exists. If one already exists, update the 
+            #  existing entry instead of creating a duplicate.
+            try:
+                old_weight = DailyWeight.objects.filter(user=request.user).get(date=new_weight.date)
+                # An instance with this date exists, so edit it
+                old_weight.weight = new_weight.weight
+                old_weight.save()
                 return redirect('nutrition_log:daily')
-        else:
-            form = DailyWeightForm(instance=daily_weight)
-    except ObjectDoesNotExist:
-        if request.method == 'POST':
-            form = DailyWeightForm(data=request.POST)
-            if form.is_valid():
-                daily_weight = form.save(commit=False)
-                daily_weight.user = request.user
-                daily_weight.save()
+            except ObjectDoesNotExist:
+                # No instance with this date exists, so we're good to make one!
+                new_weight.user = request.user
+                new_weight.save()
                 return redirect('nutrition_log:daily')
-        else:
-            form = DailyWeightForm()
+    else:
+        form = DailyWeightForm()
     context = {'form': form}
     return render(request, 'nutrition_log/set_weight.html', context)
 

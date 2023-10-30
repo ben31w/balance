@@ -8,6 +8,11 @@ class DailyWeight(models.Model):
     weight = models.FloatField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    # User + date combo needs to be unique, so the user can't log 
+    #  multiple weights for one day.
+    class Meta:
+        unique_together = ["user", "date"]
+
     def __str__(self):
         return f"{self.user.username} | {self.date} | {self.weight}"
 
