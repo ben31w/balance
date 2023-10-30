@@ -25,14 +25,10 @@
         Weight: 
         <span id="daily-weight-label"></span>
     </p>
-
-
-    <!-- Input for user's daily weight -->
-    <form method="post" action="{% url 'nutrition_log:daily' %}">
-        {% csrf_token %}
-        <!-- {{ form.as_p }} -->
-        <!-- <button name="submit">Save weight</button> -->
-    </form>
+    <p>
+        <a href="{% url 'nutrition_log:set_weight' %}">Set weight</a>
+        <a id="clear-daily-weight-link">Clear current weight</a>
+    </p>
 
 
     <!-- food item list populated dynamically by JS -->
@@ -43,8 +39,8 @@
     <script>
         // when parsing JSON objects, the encoded quotes need to be replaced with
         //  regular quotes
-        // dailyWeights = list of user's daily weights as an array of JSON objects
-        let dailyWeights = JSON.parse("{{daily_weights}}".replace(/&quot;/g,'"'));
+        // jsonWeights = list of user's daily weights as an array of JSON objects
+        let jsonWeights = JSON.parse("{{json_weights}}".replace(/&quot;/g,'"'));
 
 
         // initialize dateLabel's text when this script loads
@@ -91,20 +87,24 @@
 
         function filterDailyWeights(date) {
             // given a date, update the daily weight label to display the 
-            // appropriate weight for that date.
+            // appropriate weight for that date
+            // TODO activate the delete daily weight link.
             let label = document.getElementById("daily-weight-label");
+            let deleteLink = document.getElementById("delete-daily-weight-link");
             removeAllChildNodes(label);
 
-            for (let i=0; i<dailyWeights.length; i++) {
-                let fields = dailyWeights[i]["fields"];
-
-                // compare using toJSONDateString for consistent format
+            for (let i=0; i<jsonWeights.length; i++) {
+                let fields = jsonWeights[i]["fields"];
+                // compare using toJSONDateString for consistent date format (yyyy-mm-dd)
                 if (fields["date"] == toJSONDateString(date)) {
-                    label.innerHTML = fields["weight"]
+                    label.innerHTML = fields["weight"];
                     return;
                 }
             }
-            label.innerHTML = "You haven't logged your weight today"
+            label.innerHTML = "You haven't logged your weight today";
+
+
+            
         }
 
 

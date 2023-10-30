@@ -2,8 +2,9 @@ from datetime import date
 
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
+from commons.views import verify_user_is_owner
 from .forms import DailyWeightForm
 from .models import DailyWeight
 
@@ -11,27 +12,41 @@ from .models import DailyWeight
 @login_required
 def daily(request):
     """Load the daily page for the Nutrition Log"""
-    if request.method == 'POST':
-        form = DailyWeightForm(data=request.POST)
-        if form.is_valid():
-            daily_weight = form.save(commit=False)
-            daily_weight.date = date.today()  # temporary
-            daily_weight.user = request.user
-            daily_weight.save()
-    else:
-        form = DailyWeightForm()
-    
     daily_weights = DailyWeight.objects.filter(user=request.user)
-    weights_json = serializers.serialize("json", daily_weights)
+    json_weights = serializers.serialize("json", daily_weights)
 
-    for dw in daily_weights:
-        print(dw)
-
-    context = {'form': form, 'daily_weights': weights_json}
+    context = {'daily_weights': daily_weights, 'json_weights': json_weights}
     return render(request, 'nutrition_log/daily.html', context)
+
+
+@login_required
+def delete_weight(request, dw_id):
+    """Delete this daily weight"""
+    dw = DailyWeight.objects.get(id=dw_id)
+    owner = dw.owner
+    verify_user_is_owner(owner, request.user)
+    dw.delete()
+    return redirect('nutrition_log:daily')
 
 
 @login_required
 def index(request):
     """"Load the summary/home page for the Nutrition Log"""
     return render(request, 'nutrition_log/index.html')
+
+
+@login_required
+def set_weight(request):
+    """Load a page where user can enter their daily weight"""
+    if request.method == 'POST':
+        form = DailyWeightForm(data=request.POST)
+        if form.is_valid():
+            daily_weight = form.save(commit=False)
+            daily_weight.user = request.user
+            daily_weight.save()
+            return redirect('nutrition_log:daily')
+    else:
+        form = DailyWeightForm()
+    context = {'form': form}
+    return render(request, 'nutrition_log/set_weight.html', context)
+

@@ -1,0 +1,13 @@
+<!-- Page for logging a new weight in the Nutrition Log app -->
+
+{% extends 'nutrition_log/base.html' %}
+
+{% block subcontent %}
+    <h1>Log daily weight</h1>
+
+    <form method="post" action="{% url 'nutrition_log:set_weight' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="submit">Save</button>
+    </form>
+{% endblock subcontent %}
