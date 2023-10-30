@@ -23,7 +23,7 @@
     <!-- logged weight for the day: populated by JS-->
     <p>
         Weight: 
-        <span id="daily-weight-label"></span>
+        <span id="daily-weight-label"></span> lbs
     </p>
     <p>
         <a href="{% url 'nutrition_log:set_weight' %}">Set weight</a>
@@ -100,7 +100,7 @@
                     return;
                 }
             }
-            label.innerHTML = "You haven't logged your weight today";
+            label.innerHTML = "--";
 
 
             
