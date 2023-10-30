@@ -2,6 +2,7 @@ from datetime import date
 
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 
 from commons.views import verify_user_is_owner
@@ -38,15 +39,27 @@ def index(request):
 @login_required
 def set_weight(request):
     """Load a page where user can enter their daily weight"""
-    if request.method == 'POST':
-        form = DailyWeightForm(data=request.POST)
-        if form.is_valid():
-            daily_weight = form.save(commit=False)
-            daily_weight.user = request.user
-            daily_weight.save()
-            return redirect('nutrition_log:daily')
-    else:
-        form = DailyWeightForm()
+    try:
+        daily_weight = DailyWeight.objects.filter(user=request.user).get(date=date.today())
+        if request.method == 'POST':
+            form = DailyWeightForm(instance=daily_weight, data=request.POST)
+            if form.is_valid():
+                daily_weight = form.save(commit=False)
+                daily_weight.user = request.user
+                daily_weight.save()
+                return redirect('nutrition_log:daily')
+        else:
+            form = DailyWeightForm(instance=daily_weight)
+    except ObjectDoesNotExist:
+        if request.method == 'POST':
+            form = DailyWeightForm(data=request.POST)
+            if form.is_valid():
+                daily_weight = form.save(commit=False)
+                daily_weight.user = request.user
+                daily_weight.save()
+                return redirect('nutrition_log:daily')
+        else:
+            form = DailyWeightForm()
     context = {'form': form}
     return render(request, 'nutrition_log/set_weight.html', context)
 
