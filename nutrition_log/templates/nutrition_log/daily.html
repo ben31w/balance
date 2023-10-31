@@ -21,17 +21,24 @@
 
 
     <!-- logged weight for the day: populated by JS-->
-    <p>
-        Weight: 
-        <span id="daily-weight-label"></span> lbs
-    </p>
-    <p>
-        <a href="{% url 'nutrition_log:set_weight' %}">Set weight</a>
-    </p>
+    <h3>Body weight</h3>
+    <p><span id="daily-weight-label"></span> lbs</p>
+    <p><a href="{% url 'nutrition_log:set_weight' %}">Set weight</a></p>
+    
+    <hr>
 
-
-    <!-- food item list populated dynamically by JS -->
-    <ul id="food-item-list"></ul>
+    <!-- calories and protein for the day: updated by JS -->
+    <h3>Food</h3>
+    <p><span id="daily-calories-label">0</span> Calories</p>
+    <p><span id="daily-protein-label">0</span> g Protein</p>
+    <h4>Breakfast</h4>
+    <table id="breakfast"></table>
+    <h4>Lunch</h4>
+    <table id="lunch"></table>
+    <h4>Dinner</h4>
+    <table id="dinner"></table>
+    <h4>Snacks</h4>
+    <table id="snacks"></table>
 {% endblock subcontent %}
 
 {% block scripts %}
@@ -100,10 +107,7 @@
                     return;
                 }
             }
-            label.innerHTML = "--";
-
-
-            
+            label.innerHTML = "--";            
         }
 
 
