@@ -94,15 +94,14 @@
         function filterDailyWeights(date) {
             // given a date, update the daily weight label to display the 
             // appropriate weight for that date
-            // TODO activate the delete daily weight link.
             let label = document.getElementById("daily-weight-label");
             let deleteLink = document.getElementById("delete-daily-weight-link");
             removeAllChildNodes(label);
 
             for (let i=0; i<jsonWeights.length; i++) {
                 let fields = jsonWeights[i]["fields"];
-                // compare using toJSONDateString for consistent date format (yyyy-mm-dd)
-                if (fields["date"] == toJSONDateString(date)) {
+                // check for matching date using yyyy-mm-dd format
+                if (fields["date"] == date.toJSON().substring(0,10)) {
                     label.innerHTML = fields["weight"];
                     return;
                 }
@@ -113,19 +112,6 @@
 
         function filterFoodItemsByDate(date) {
             // TODO
-        }
-
-
-        function toJSONDateString(JSDateObj) {
-            // convert JavaScript Date object to JSON's date string format
-            // (yyyy-mm-dd)
-            // note: JS month indexing starts at 0, so it's off by one compared
-            // to JSON
-            // Months and dates need to be zero-padded if they are single-digit
-            let y = JSDateObj.getFullYear();
-            let m = String(JSDateObj.getMonth() + 1).padStart(2, '0');
-            let d = String(JSDateObj.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
         }
 
 
