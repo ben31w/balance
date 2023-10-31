@@ -1,5 +1,3 @@
-from datetime import date
-
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,16 +16,6 @@ def daily(request):
 
     context = {'daily_weights': daily_weights, 'json_weights': json_weights}
     return render(request, 'nutrition_log/daily.html', context)
-
-
-@login_required
-def delete_weight(request, dw_id):
-    """Delete this daily weight"""
-    dw = DailyWeight.objects.get(id=dw_id)
-    owner = dw.owner
-    verify_user_is_owner(owner, request.user)
-    dw.delete()
-    return redirect('nutrition_log:daily')
 
 
 @login_required

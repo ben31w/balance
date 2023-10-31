@@ -33,12 +33,16 @@
     <p><span id="daily-protein-label">0</span> g Protein</p>
     <h4>Breakfast</h4>
     <table id="breakfast"></table>
+    <a>Add item</a>
     <h4>Lunch</h4>
     <table id="lunch"></table>
+    <a>Add item</a>
     <h4>Dinner</h4>
     <table id="dinner"></table>
+    <a>Add item</a>
     <h4>Snacks</h4>
     <table id="snacks"></table>
+    <a>Add item</a>
 {% endblock subcontent %}
 
 {% block scripts %}
@@ -95,7 +99,6 @@
             // given a date, update the daily weight label to display the 
             // appropriate weight for that date
             let label = document.getElementById("daily-weight-label");
-            let deleteLink = document.getElementById("delete-daily-weight-link");
             removeAllChildNodes(label);
 
             for (let i=0; i<jsonWeights.length; i++) {
