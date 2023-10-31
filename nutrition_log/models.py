@@ -25,6 +25,11 @@ class FoodItem(models.Model):
     producer = models.CharField(blank=True, max_length=25)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
+    def __str__(self) -> str:
+        if self.producer is None:
+            return f"{self.name} | {self.user}"
+        return f"{self.name}, {self.producer} | {self.user}"
+
 
 class Recipe(models.Model):
     """A collection of food items that a user can log"""
@@ -42,6 +47,9 @@ class Unit(models.Model):
     fatsPerUnit = models.FloatField()
     food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self) -> str:
+        return f"{self.name} of {self.food_item}"
     
 
 class Contains(models.Model):
@@ -53,6 +61,9 @@ class Contains(models.Model):
     quantity = models.FloatField()
     unit = models.ForeignKey(Unit, on_delete=models.RESTRICT)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        verbose_name_plural = 'contains'
 
 
 class LoggedFoodItem(models.Model):
