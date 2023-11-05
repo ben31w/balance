@@ -64,3 +64,15 @@ def set_weight(request):
     context = {'form': form}
     return render(request, 'nutrition_log/set_weight.html', context)
 
+
+def weekly(request):
+    """Load the weekly page"""
+    daily_weights = DailyWeight.objects.filter(user=request.user).order_by("date")
+    if len(daily_weights) == 0:
+        context = {'daily_weights': daily_weights}
+        return render(request, 'nutrition_log/weekly.html', context)
+    
+    first_entry = daily_weights[0]
+    for daily_weight in daily_weights:
+        print(daily_weight["date"])
+

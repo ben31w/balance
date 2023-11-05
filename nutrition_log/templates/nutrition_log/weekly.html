@@ -1,0 +1,17 @@
+<!-- Weekly page for the Nutrition Log app -->
+{% extends 'nutrition_log/base.html' %}
+
+{% block subcontent %}
+    <h1>My Nutrition Log</h1>
+    <h2>Weekly</h2>
+
+    <ul>
+        {% for daily_weight in daily_weights %}
+            <li>
+                {{ daily_weight }}
+            </li>
+        {% empty %}
+            <p>Nothing to see here</p>
+        {% endfor %}
+    </ul>
+{% endblock subcontent %}
