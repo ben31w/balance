@@ -11,4 +11,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('daily', views.daily, name='daily'),
     path('set_weight', views.set_weight, name='set_weight'),
+    path('log_food_item', views.log_food_item, name='log_food_item'),
 ]

@@ -1,0 +1,11 @@
+<!-- Food logging page for the Nutrition Log app -->
+{% extends 'nutrition_log/base.html' %}
+
+{% block subcontent %}
+    <h1>My Nutrition Log</h1>
+    <h2>Log a food item</h2>
+
+    <form>
+        {{ form.as_p }}
+    </form>
+{% endblock subcontent %}

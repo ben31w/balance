@@ -8,7 +8,7 @@ from datetime import date
 
 from django import forms
 
-from .models import DailyWeight
+from .models import DailyWeight, LoggedFoodItem
 
 
 class DailyWeightForm(forms.ModelForm):
@@ -22,3 +22,9 @@ class DailyWeightForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['date'].initial = date.today()  # Set the default date to today (temp)
 
+
+class LogFoodItemForm(forms.ModelForm):
+    """Form where users can log a food item"""
+    class Meta:
+        model = LoggedFoodItem
+        fields = ['date', 'food_item', 'unit', 'quantity', 'meal']

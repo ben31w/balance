@@ -3,8 +3,7 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 
-from commons.views import verify_user_is_owner
-from .forms import DailyWeightForm
+from .forms import DailyWeightForm, LogFoodItemForm
 from .models import DailyWeight
 
 
@@ -22,6 +21,14 @@ def daily(request):
 def index(request):
     """"Load the summary/home page for the Nutrition Log"""
     return render(request, 'nutrition_log/index.html')
+
+
+@login_required
+def log_food_item(request):
+    """Load a form where the user can log a food item"""
+    form = LogFoodItemForm()
+    context = {'form': form}
+    return render(request, 'nutrition_log/log_food_item.html', context)
 
 
 @login_required
