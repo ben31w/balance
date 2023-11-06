@@ -6,16 +6,21 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 
 from .forms import DailyWeightForm, LogFoodItemForm
-from .models import DailyWeight
+from .models import DailyWeight, LoggedFoodItem
 
 
 @login_required
 def daily(request):
     """Load the daily page for the Nutrition Log"""
+    # Serialize into JSON so that these objects can be used by JavaScript
     daily_weights = DailyWeight.objects.filter(user=request.user)
     json_weights = serializers.serialize("json", daily_weights)
 
-    context = {'daily_weights': daily_weights, 'json_weights': json_weights}
+    logged_food_items = LoggedFoodItem.objects.filter(user=request.user)
+    json_food_items = serializers.serialize("json", logged_food_items)
+    print(logged_food_items)
+
+    context = {'json_weights': json_weights, "json_food_items": json_food_items}
     return render(request, 'nutrition_log/daily.html', context)
 
 
@@ -28,7 +33,14 @@ def index(request):
 @login_required
 def log_food_item(request):
     """Load a form where the user can log a food item"""
-    form = LogFoodItemForm()
+    if request.method == 'POST':
+       form = LogFoodItemForm(data=request.POST)
+       logged_food_item = form.save(commit=False)
+       logged_food_item.user = request.user
+       logged_food_item.save()
+       return redirect('nutrition_log:daily')
+    else:
+        form = LogFoodItemForm()
     context = {'form': form}
     return render(request, 'nutrition_log/log_food_item.html', context)
 

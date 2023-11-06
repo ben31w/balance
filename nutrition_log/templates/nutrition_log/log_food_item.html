@@ -5,7 +5,9 @@
     <h1>My Nutrition Log</h1>
     <h2>Log a food item</h2>
 
-    <form>
+    <form method="post" action="{% url 'nutrition_log:log_food_item' %}">
+        {% csrf_token %}
         {{ form.as_p }}
+        <button type="submit" name="submit">Save</button>
     </form>
 {% endblock subcontent %}

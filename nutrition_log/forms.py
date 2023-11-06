@@ -28,3 +28,4 @@ class LogFoodItemForm(forms.ModelForm):
     class Meta:
         model = LoggedFoodItem
         fields = ['date', 'food_item', 'unit', 'quantity', 'meal']
+        widgets = {'date': forms.SelectDateWidget()}
