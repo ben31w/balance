@@ -5,13 +5,22 @@
     <h1>My Nutrition Log</h1>
     <h2>Weekly</h2>
 
-    <ul>
-        {% for daily_weight in daily_weights %}
-            <li>
-                {{ daily_weight }}
-            </li>
-        {% empty %}
-            <p>Nothing to see here</p>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>WT</th>
+            <th>Cal</th>
+        </tr>
+        {% for date in dates %}
+        <tr>
+            <td>{{ date }}</td>
+            {% for daily_weight in daily_weights %}
+                {% if daily_weight.date == date %}
+                    <td>{{ daily_weight.weight }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
         {% endfor %}
-    </ul>
+        
+    </table>
 {% endblock subcontent %}
