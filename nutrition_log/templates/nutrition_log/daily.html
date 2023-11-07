@@ -64,6 +64,7 @@
         // then populate the daily weight label and food items with the appropriate date
         let dateLabel = document.getElementById("date-label");
         let today = new Date();
+        today.setHours(0, 0, 0, 0);  // need to remove time part.
         dateLabel.innerHTML = today.toDateString();
         filterFoodItemsByDate(today);
         filterDailyWeights(today);
@@ -126,7 +127,7 @@
             // TODO
             // populate breakfast table
             let breakfast = document.getElementById("breakfast");
-            console.log("filtering breakfast my favorite meal");
+            console.log(`filtering breakfast for ${date}`);
             
             // don't like how this filtering is done...
             // but here we filter the food items by date 
