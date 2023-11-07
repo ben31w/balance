@@ -55,7 +55,6 @@
         const jsonWeights = JSON.parse("{{json_weights}}".replace(/&quot;/g,'"'));
         // jsonFoodItems = list of user's logged food items as an array of JSON objects
         const jsonFoodItems = JSON.parse("{{json_food_items}}".replace(/&quot;/g,'"'));
-        console.log(jsonFoodItems);
 
 
         // WHEN THE SCRIPT LOADS
@@ -69,6 +68,7 @@
         filterFoodItemsByDate(today);
         filterDailyWeights(today);
 
+        
         // FUNCTIONS
         // ----------
         function decDate() {
@@ -124,19 +124,34 @@
 
 
         function filterFoodItemsByDate(date) {
-            // TODO
-            // populate breakfast table
             let breakfast = document.getElementById("breakfast");
-            console.log(`filtering breakfast for ${date}`);
+            let lunch = document.getElementById("lunch");
+            let dinner = document.getElementById("dinner");
+            let snacks = document.getElementById("snacks");
             
-            // don't like how this filtering is done...
-            // but here we filter the food items by date 
-            // populate breakfast table, breakfast food items meal = 1.
-            removeAllChildNodes(breakfast);
+            // very bad hard-coded numbers for each meal, but it works for now.
+            filterFoodItemsByMeal(date, 1, breakfast);
+            filterFoodItemsByMeal(date, 2, lunch);
+            filterFoodItemsByMeal(date, 3, dinner);
+            filterFoodItemsByMeal(date, 4, snacks);
+        }
+
+
+        // date = date 
+        // meal = 0 | 1 | 2 | 3
+        // table = the table to modify (snacks | breakfast | lunch | dinner)
+        // I don't like how this function has to take a date as parameter, 
+        // but unfortunately, I haven't found a good way to filter the logged
+        // food items by date before being passed here.
+        function filterFoodItemsByMeal(date, meal, table) {
+            removeAllChildNodes(table);
+
+            // don't like how this filtering is done
+            // (because it's going through EVERY food item the user has logged)...
+            // but here we filter the food items by date and meal
             for (let i=0; i<jsonFoodItems.length; i++) {
-                console.log(jsonFoodItems[i]);
-                if (jsonFoodItems[i]["fields"]["date"]== date.toJSON().substring(0,10)) {
-                    console.log("Found a food item for this date");
+                let fields = jsonFoodItems[i]["fields"];
+                if (fields["date"] == date.toJSON().substring(0,10) && fields["meal"] == meal) {
                     let newTableRow = document.createElement("tr");
                     let tdFoodItemName = document.createElement("td");
                     let tdCal = document.createElement("td");
@@ -147,7 +162,7 @@
                     newTableRow.appendChild(tdFoodItemName);
                     newTableRow.appendChild(tdCal);
                     newTableRow.appendChild(tdPro);
-                    breakfast.appendChild(newTableRow);
+                    table.appendChild(newTableRow);
                 }
             }
         }
