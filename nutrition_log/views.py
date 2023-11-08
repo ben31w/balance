@@ -6,21 +6,68 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 
 from .forms import DailyWeightForm, LogFoodItemForm
-from .models import DailyWeight, LoggedFoodItem
+from .models import DailyWeight, FoodItem, LoggedFoodItem, Unit
+
+
+UNITS = Unit.objects.all()
 
 
 @login_required
 def daily(request):
     """Load the daily page for the Nutrition Log"""
-    # Serialize into JSON so that these objects can be used by JavaScript
+    return render(request, 'nutrition_log/daily.html')
+
+
+@login_required
+def filter_nutrition_log(request):
+    """
+    This function is called when the user submits a new date in the datepicker.
+    Get the relevant information for this date that should be rendered, and
+    pass it to daily.html
+    Info to pass includes the user's daily weight, total calories, etc.
+    """
     daily_weights = DailyWeight.objects.filter(user=request.user)
-    json_weights = serializers.serialize("json", daily_weights)
-
     logged_food_items = LoggedFoodItem.objects.filter(user=request.user)
-    json_food_items = serializers.serialize("json", logged_food_items)
-    print(logged_food_items)
+    
+    selected_date = request.GET.get('selectedDate')
+    if not selected_date:
+        # update to better handling later.
+        return render(request, 'nutrition_log/daily.html')
 
-    context = {'json_weights': json_weights, "json_food_items": json_food_items}
+    # Get the daily weight
+    try:
+        daily_weight = daily_weights.get(date=selected_date).weight
+        print(daily_weight)
+    except ObjectDoesNotExist:
+        daily_weight = "---"
+        print(daily_weight)
+    
+    # Get the relevant logged food items for the selected date, 
+    #  and store them as strings that can be rendered in HTML later.
+    #  string format: 'Chicken breast (raw), 1x100g'
+    # Also store the calories of each food item the user has logged.
+    relevant_items = []
+    calories_list = []
+    for logged_food_item in logged_food_items:
+        # for some reason, this comparison only works when the dates are
+        #  casted as strings.
+        if str(logged_food_item.date) == str(selected_date):
+            unit = UNITS.get(id=logged_food_item.unit.id)
+            quantity = logged_food_item.quantity
+            
+            lfi_str = f"{logged_food_item.food_item.name}, {quantity}x{unit.name}"
+            relevant_items.append(lfi_str)
+            
+            calories = quantity * unit.calsPerUnit
+            calories_list.append(calories)
+    total_calories = sum(calories_list)
+    
+
+    context = {
+        'daily_weight': daily_weight, 
+        'logged_food_items': relevant_items, 
+        'total_calories': total_calories
+    }
     return render(request, 'nutrition_log/daily.html', context)
 
 

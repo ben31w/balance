@@ -5,32 +5,35 @@
     <h1>My Nutrition Log</h1>
     <h2>Daily View</h2>
 
+ 
+    <!-- TODO this Date label isn't updating
+        Date label might not be the best way to go about this. -->
+    <p id="currentDateLabel">
+        Current Date: 
+        <span id="currentDate"></span>
+    </p>
 
-    <!-- Date picker-->
-    <form action="javascript:setDate(date.value)">
-        Enter a date:
-        <input type="date" id="date">
+    <!-- Date picker -->
+    <form action="{% url 'nutrition_log:filter_nutrition_log' %}" method="get">
+        <label for="dateInput">Select a Date:</label>
+        <input type="date" id="dateInput" name="selectedDate">
+        <br>
         <input type="submit" value="Submit">
     </form>
-    <p>
-        <button type="button" onclick="decDate()">&lt</button>
-        <!-- date label's text is initialized dynamically by JS -->
-        <span id="date-label" style="font-family: monospace; font-size: 2em;"></span>
-        <button type="button" onclick="incDate()">&gt</button>
-    </p>
+
 
 
     <!-- logged weight for the day: populated by JS-->
     <h3>Body weight</h3>
-    <p><span id="daily-weight-label"></span> lbs</p>
+    <p><span id="dailyWeightLabel"></span> lbs</p>
     <p><a href="{% url 'nutrition_log:set_weight' %}">Set weight</a></p>
     
     <hr>
 
     <!-- calories and protein for the day: updated by JS -->
     <h3>Food</h3>
-    <p><span id="daily-calories-label">0</span> Calories</p>
-    <p><span id="daily-protein-label">0</span> g Protein</p>
+    <p><span id="dailyCaloriesLabel">0</span> Calories</p>
+    <p><span id="dailyProteinLabel">0</span> g Protein</p>
     <h4>Breakfast</h4>
     <table id="breakfast"></table>
     <a href="{% url 'nutrition_log:log_food_item' %}">Add item</a>
@@ -47,131 +50,30 @@
 
 {% block scripts %}
     <script>
-        // CONSTANTS
-        // ---------
-        // when parsing JSON objects, the encoded quotes need to be replaced with
-        //  regular quotes
-        // jsonWeights = list of user's daily weights as an array of JSON objects
-        const jsonWeights = JSON.parse("{{json_weights}}".replace(/&quot;/g,'"'));
-        // jsonFoodItems = list of user's logged food items as an array of JSON objects
-        const jsonFoodItems = JSON.parse("{{json_food_items}}".replace(/&quot;/g,'"'));
-
-
         // WHEN THE SCRIPT LOADS
         // ---------------------
-        // initialize dateLabel's text when this script loads
-        // then populate the daily weight label and food items with the appropriate date
-        let dateLabel = document.getElementById("date-label");
+        // initialize date label's text 
+        let dateDisplay = document.getElementById("currentDate");
         let today = new Date();
-        today.setHours(0, 0, 0, 0);  // need to remove time part.
-        dateLabel.innerHTML = today.toDateString();
-        filterFoodItemsByDate(today);
-        filterDailyWeights(today);
+        today.setHours(0, 0, 0, 0);  // need to remove time part. consider using a library for this.
+        dateDisplay.innerHTML = today.toDateString();
 
+        // and the daily weight label
+        let dailyWeightDisplay = document.getElementById("dailyWeightLabel");
+        let dailyWeight = '{{ daily_weight }}';
+        dailyWeightDisplay.innerHTML = dailyWeight;
+
+        // and the total calories label
+        let dailyCaloriesDisplay = document.getElementById("dailyCaloriesLabel")
+        let dailyCalories = '{{ total_calories }}'
+        dailyCaloriesDisplay.innerHTML = dailyCalories;
+
+        // TODO and logged food items
+        let breakfast = document.getElementById("breakfast");
+        let lunch = document.getElementById("lunch");
+        let dinner = document.getElementById("dinner");
+        let snacks = document.getElementById("snacks");
+        console.log(loggedFoodItems);
         
-        // FUNCTIONS
-        // ----------
-        function decDate() {
-            let date = new Date(dateLabel.innerHTML);
-            let newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            dateLabel.innerHTML = newDate.toDateString();
-            filterFoodItemsByDate(newDate);
-            filterDailyWeights(newDate);
-        }
-
-
-        function incDate() {
-            let date = new Date(dateLabel.innerHTML);
-            let newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-            dateLabel.innerHTML = newDate.toDateString();
-            filterFoodItemsByDate(newDate);
-            filterDailyWeights(newDate);
-        }
-
-
-        function setDate(dateString) {
-            // given a dateString ("yyyy-mm-dd"), filter the exercise list to match
-            // the date.
-            // unfortunately, constructing a date directly from dateString results in 
-            //  the day being off by one. Deconstructing the string works fine.
-            let parts = dateString.split("-");
-            let y = Number(parts[0]);
-            let m = Number(parts[1]) - 1;
-            let d = Number(parts[2]);
-            let newDate = new Date(y, m, d);
-            dateLabel.innerHTML = newDate.toDateString();
-            filterFoodItemsByDate(newDate);
-            filterDailyWeights(newDate);
-        }
-
-
-        function filterDailyWeights(date) {
-            // given a date, update the daily weight label to display the 
-            // appropriate weight for that date
-            let label = document.getElementById("daily-weight-label");
-            removeAllChildNodes(label);
-
-            for (let i=0; i<jsonWeights.length; i++) {
-                let fields = jsonWeights[i]["fields"];
-                // check for matching date using yyyy-mm-dd format
-                if (fields["date"] == date.toJSON().substring(0,10)) {
-                    label.innerHTML = fields["weight"];
-                    return;
-                }
-            }
-            label.innerHTML = "--";            
-        }
-
-
-        function filterFoodItemsByDate(date) {
-            let breakfast = document.getElementById("breakfast");
-            let lunch = document.getElementById("lunch");
-            let dinner = document.getElementById("dinner");
-            let snacks = document.getElementById("snacks");
-            
-            // very bad hard-coded numbers for each meal, but it works for now.
-            filterFoodItemsByMeal(date, 1, breakfast);
-            filterFoodItemsByMeal(date, 2, lunch);
-            filterFoodItemsByMeal(date, 3, dinner);
-            filterFoodItemsByMeal(date, 4, snacks);
-        }
-
-
-        // date = date 
-        // meal = 0 | 1 | 2 | 3
-        // table = the table to modify (snacks | breakfast | lunch | dinner)
-        // I don't like how this function has to take a date as parameter, 
-        // but unfortunately, I haven't found a good way to filter the logged
-        // food items by date before being passed here.
-        function filterFoodItemsByMeal(date, meal, table) {
-            removeAllChildNodes(table);
-
-            // don't like how this filtering is done
-            // (because it's going through EVERY food item the user has logged)...
-            // but here we filter the food items by date and meal
-            for (let i=0; i<jsonFoodItems.length; i++) {
-                let fields = jsonFoodItems[i]["fields"];
-                if (fields["date"] == date.toJSON().substring(0,10) && fields["meal"] == meal) {
-                    let newTableRow = document.createElement("tr");
-                    let tdFoodItemName = document.createElement("td");
-                    let tdCal = document.createElement("td");
-                    let tdPro = document.createElement("td");
-
-                    tdFoodItemName.appendChild(document.createTextNode("something"));
-
-                    newTableRow.appendChild(tdFoodItemName);
-                    newTableRow.appendChild(tdCal);
-                    newTableRow.appendChild(tdPro);
-                    table.appendChild(newTableRow);
-                }
-            }
-        }
-
-
-        function removeAllChildNodes(parentNode) {
-            while (parentNode.firstChild) {
-                parentNode.removeChild(parentNode.firstChild);
-            }
-        }
     </script>
 {% endblock scripts %}

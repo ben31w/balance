@@ -26,9 +26,9 @@ class FoodItem(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
-        if self.producer is None:
-            return f"{self.name} | {self.user}"
-        return f"{self.name}, {self.producer} | {self.user}"
+        if self.producer is None or self.producer == "":
+            return f"{self.name} , {self.user}"
+        return f"{self.name}, {self.producer} , {self.user}"
 
 
 class Recipe(models.Model):
@@ -74,3 +74,6 @@ class LoggedFoodItem(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.RESTRICT)
     meal = models.IntegerField()  # 0 for snack, 1 for breakfast, 2 for lunch, etc.
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.user.username} | {self.date} | {self.food_item} | {self.quantity} | {self.unit.name} | {self.meal}"
