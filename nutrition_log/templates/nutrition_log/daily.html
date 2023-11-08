@@ -21,19 +21,25 @@
         <input type="submit" value="Submit">
     </form>
 
-
-
-    <!-- logged weight for the day: populated by JS-->
     <h3>Body weight</h3>
-    <p><span id="dailyWeightLabel"></span> lbs</p>
+    <p><span id="dailyWeightLabel">{{ daily_weight }}</span> lbs</p>
     <p><a href="{% url 'nutrition_log:set_weight' %}">Set weight</a></p>
     
     <hr>
 
-    <!-- calories and protein for the day: updated by JS -->
     <h3>Food</h3>
-    <p><span id="dailyCaloriesLabel">0</span> Calories</p>
-    <p><span id="dailyProteinLabel">0</span> g Protein</p>
+    <p><span id="totalCaloriesLabel">{{ total_calories }}</span> Calories</p>
+    <p><span id="totalProteinLabel">0</span> g Protein</p>
+    <ul>
+        {% for lfi in logged_food_items %}
+        <li>
+            {{ lfi }}
+        </li>
+        {% empty %}
+        <p>You haven't logged anything today.</p>
+        {% endfor %}
+    </ul>
+
     <h4>Breakfast</h4>
     <table id="breakfast"></table>
     <a href="{% url 'nutrition_log:log_food_item' %}">Add item</a>
@@ -58,22 +64,10 @@
         today.setHours(0, 0, 0, 0);  // need to remove time part. consider using a library for this.
         dateDisplay.innerHTML = today.toDateString();
 
-        // and the daily weight label
-        let dailyWeightDisplay = document.getElementById("dailyWeightLabel");
-        let dailyWeight = '{{ daily_weight }}';
-        dailyWeightDisplay.innerHTML = dailyWeight;
-
-        // and the total calories label
-        let dailyCaloriesDisplay = document.getElementById("dailyCaloriesLabel")
-        let dailyCalories = '{{ total_calories }}'
-        dailyCaloriesDisplay.innerHTML = dailyCalories;
-
         // TODO and logged food items
         let breakfast = document.getElementById("breakfast");
         let lunch = document.getElementById("lunch");
         let dinner = document.getElementById("dinner");
         let snacks = document.getElementById("snacks");
-        console.log(loggedFoodItems);
-        
     </script>
 {% endblock scripts %}
