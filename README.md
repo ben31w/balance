@@ -24,7 +24,8 @@ Root directory folders:
 - `commons`: app containing resources that are shared throughout all the 
 other apps, like a base.html for other pages to inherit from
 - `users`: app containing user authentication files
-- `workout_log`: app for the Workout Log files
+- `workout_log`: files for the Workout Log app
+- `nutrition_log`: files for the Nutrition Log app
 
 Root directory files:
 - `manage.py`: created by Django for development use
