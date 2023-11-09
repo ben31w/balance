@@ -46,27 +46,36 @@ def filter_nutrition_log(request):
     #  and store them as strings that can be rendered in HTML later.
     #  string format: 'Chicken breast (raw), 1x100g'
     # Also store the calories of each food item the user has logged.
+    # Not currently doing much with calories list, just getting the sum
+    # but it may be useful to keep this in a separate list for rendering purposes later
     relevant_items = []
     calories_list = []
+    protein_list = []
     for logged_food_item in logged_food_items:
         # for some reason, this comparison only works when the dates are
         #  casted as strings.
         if str(logged_food_item.date) == str(selected_date):
             unit = UNITS.get(id=logged_food_item.unit.id)
             quantity = logged_food_item.quantity
-            
-            lfi_str = f"{logged_food_item.food_item.name}, {quantity}x{unit.name}"
-            relevant_items.append(lfi_str)
-            
+
             calories = quantity * unit.calsPerUnit
             calories_list.append(calories)
+
+            protein = quantity * unit.proPerUnit
+            protein_list.append(protein)
+            
+            lfi_str = f"{logged_food_item.food_item.name}, {quantity}x{unit.name}  |  {calories} Calories | {protein}g Protein"
+            relevant_items.append(lfi_str)
+            
     total_calories = sum(calories_list)
+    total_protein = sum(protein_list)
     
 
     context = {
         'daily_weight': daily_weight, 
         'logged_food_items': relevant_items, 
-        'total_calories': total_calories
+        'total_calories': total_calories,
+        'total_protein': total_protein
     }
     return render(request, 'nutrition_log/daily.html', context)
 
