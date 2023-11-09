@@ -1,7 +1,6 @@
 from datetime import date
 
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 
@@ -139,22 +138,21 @@ def set_weight(request):
 def weekly(request):
     """Load the weekly page"""
     daily_weights = DailyWeight.objects.filter(user=request.user).order_by("date")
-    if len(daily_weights) == 0:
-        context = {'daily_weights': daily_weights}
-        return render(request, 'nutrition_log/weekly.html', context)
-    
-    first_entry = daily_weights[0]
-    first_date = first_entry.date
-    print(first_date)
 
     start_date = date(2023, 10, 22)
     dates = [start_date]
     day = start_date.day
     for i in range(1, 7):
-        # try-except if the day is past the month.
+        # TODO add a try-except if the day is past the month.
         d = date(2023, 10, day + i)
         dates.append(d)
-    print(dates)
-    context = {'daily_weights': daily_weights, 'dates': dates}
+    
+    daily_weights = daily_weights.filter(date__range=["2023-10-22", "2023-10-28"])
+    sumWt = 0
+    for dw in daily_weights:
+        sumWt += dw.weight
+    avgWt = sumWt / len(daily_weights)
+
+    context = {'daily_weights': daily_weights, 'dates': dates, 'avgWt': round(avgWt, 2)}
     return render(request, 'nutrition_log/weekly.html', context)
 
