@@ -5,8 +5,6 @@
     <h1>My Nutrition Log</h1>
     <h2>Progress Table</h2>
 
-    <p>{{alert}}</p>
-
     <form action="{% url 'nutrition_log:filter_progress_table' %}" method="get">
         <label for="startDateInput">Start Date:</label>
         <input type="date" id="startDateInput" name="startDate">
@@ -18,23 +16,28 @@
     </form>
 
     <hr>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>WT</th>
-            <th>Cal</th>
-        </tr>
-        {% for date in dates %}
-        <tr>
-            <td>{{ date }}</td>
-            {% for daily_weight in daily_weights %}
-                {% if daily_weight.date == date %}
-                    <td>{{ daily_weight.weight }}</td>
-                {% endif %}
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
 
-    <p>Average WT: {{ avgWt }}</p>
+    {% if alert %}
+        <p>{{ alert }}</p>
+    {% else %}
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>WT</th>
+                <th>Cal</th>
+            </tr>
+            {% for date in dates %}
+            <tr>
+                <td>{{ date }}</td>
+                {% for daily_weight in daily_weights %}
+                    {% if daily_weight.date == date %}
+                        <td>{{ daily_weight.weight }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+        <p>Average WT: {{ avgWt }}</p>
+    {% endif %}
+    
 {% endblock subcontent %}

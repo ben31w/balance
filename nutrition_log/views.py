@@ -1,5 +1,6 @@
-from datetime import date
+import datetime
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
@@ -85,22 +86,54 @@ def filter_progress_table(request):
     This function is called when the user submits a start and end date in 
     the Weekly/Progress page.
     """
-    start_date = request.GET.get('startDate')
-    end_date = request.GET.get('endDate')
+    start_str = request.GET.get('startDate')
+    end_str = request.GET.get('endDate')
 
-    # Error checking for start and end date
-    if not start_date or not end_date:
+    # Error checking for start and end date inputs
+    if not start_str or not end_str:
         alert = "You must fill out both a start date and an end date"
         context = {'alert': alert}
         return render(request, 'nutrition_log/weekly.html', context)
-    elif end_date < start_date:
+    elif end_str < start_str:
         alert = "End date must be after start date"
         context = {'alert': alert}
         return render(request, 'nutrition_log/weekly.html', context)
 
-    alert = "Good job"
-    context = {'alert': alert}
+    # Get dates between start and end date as date objects
+    start_date = datetime.datetime.strptime(start_str, '%Y-%m-%d').date()
+    end_date = datetime.datetime.strptime(end_str, '%Y-%m-%d').date()
+    dates = get_list_of_dates(start_date, end_date)
+    
+    # Get Daily Weights logged between start and end date, inclusive
+    daily_weights = DailyWeight.objects.filter(user=request.user).filter(
+        date__range=[f"{start_str}", f"{end_str}"])
+    
+    # Return early if there are no daily weights logged
+    if len(daily_weights) == 0:
+        alert = "You haven't logged any weights for these dates yet"
+        context = {'alert': alert}
+        return render(request, 'nutrition_log/weekly.html', context)
+    
+    # Get average
+    sumWt = 0
+    for dw in daily_weights:
+        sumWt += dw.weight
+    avgWt = sumWt / len(daily_weights)
+
+    context = {'daily_weights': daily_weights, 'dates': dates, 'avgWt': round(avgWt, 2)}
     return render(request, 'nutrition_log/weekly.html', context)
+
+
+def get_list_of_dates(start, end):
+    """
+    Get list of dates between the start date and end date (inclusive).
+    """
+    delta_in_days = (end - start).days
+    dates = [start]
+    for i in range(1, delta_in_days + 1):
+        d = start + relativedelta(days=i)
+        dates.append(d)
+    return dates
 
 
 @login_required
@@ -161,22 +194,8 @@ def set_weight(request):
 @login_required
 def weekly(request):
     """Load the weekly page"""
-    daily_weights = DailyWeight.objects.filter(user=request.user).order_by("date")
-
-    start_date = date(2023, 10, 22)
-    dates = [start_date]
-    day = start_date.day
-    for i in range(1, 7):
-        # TODO add a try-except if the day is past the month.
-        d = date(2023, 10, day + i)
-        dates.append(d)
-    
-    daily_weights = daily_weights.filter(date__range=["2023-10-22", "2023-10-28"])
-    sumWt = 0
-    for dw in daily_weights:
-        sumWt += dw.weight
-    avgWt = sumWt / len(daily_weights)
-
-    context = {'daily_weights': daily_weights, 'dates': dates, 'avgWt': round(avgWt, 2)}
+    alert = ('Enter a start and end date, and press submit to view your calories '
+              'and weight between those dates')
+    context = {'alert': alert}
     return render(request, 'nutrition_log/weekly.html', context)
 
