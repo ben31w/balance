@@ -14,4 +14,5 @@ urlpatterns = [
     path('log_food_item', views.log_food_item, name='log_food_item'),
     path('weekly', views.weekly, name='weekly'),
     path('filter_nutrition_log', views.filter_nutrition_log, name='filter_nutrition_log'),
+    path('filter_progress_table', views.filter_progress_table, name='filter_progress_table'),
 ]

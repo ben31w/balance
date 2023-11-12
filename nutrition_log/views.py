@@ -80,6 +80,30 @@ def filter_nutrition_log(request):
 
 
 @login_required
+def filter_progress_table(request):
+    """
+    This function is called when the user submits a start and end date in 
+    the Weekly/Progress page.
+    """
+    start_date = request.GET.get('startDate')
+    end_date = request.GET.get('endDate')
+
+    # Error checking for start and end date
+    if not start_date or not end_date:
+        alert = "You must fill out both a start date and an end date"
+        context = {'alert': alert}
+        return render(request, 'nutrition_log/weekly.html', context)
+    elif end_date < start_date:
+        alert = "End date must be after start date"
+        context = {'alert': alert}
+        return render(request, 'nutrition_log/weekly.html', context)
+
+    alert = "Good job"
+    context = {'alert': alert}
+    return render(request, 'nutrition_log/weekly.html', context)
+
+
+@login_required
 def index(request):
     """"Load the summary/home page for the Nutrition Log"""
     return render(request, 'nutrition_log/index.html')

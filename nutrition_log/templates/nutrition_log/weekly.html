@@ -3,8 +3,21 @@
 
 {% block subcontent %}
     <h1>My Nutrition Log</h1>
-    <h2>Weekly</h2>
+    <h2>Progress Table</h2>
 
+    <p>{{alert}}</p>
+
+    <form action="{% url 'nutrition_log:filter_progress_table' %}" method="get">
+        <label for="startDateInput">Start Date:</label>
+        <input type="date" id="startDateInput" name="startDate">
+        <br>
+        <label for="endDateInput">End Date:</label>
+        <input type="date" id="endDateInput" name="endDate">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <hr>
     <table>
         <tr>
             <th>Date</th>
