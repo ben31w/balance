@@ -108,20 +108,25 @@ def filter_progress_table(request):
     daily_weights = DailyWeight.objects.filter(user=request.user).filter(
         date__range=[f"{start_str}", f"{end_str}"])
     
-    # Return early if there are no daily weights logged
+    # Get avg wt or return early if there are no daily weights logged
     if len(daily_weights) == 0:
         alert = "You haven't logged any weights for these dates yet"
         context = {'alert': alert}
         return render(request, 'nutrition_log/weekly.html', context)
-    
-    # Get average
-    sumWt = 0
-    for dw in daily_weights:
-        sumWt += dw.weight
-    avgWt = sumWt / len(daily_weights)
+    avgWt = get_avg_daily_weight(daily_weights)
 
     context = {'daily_weights': daily_weights, 'dates': dates, 'avgWt': round(avgWt, 2)}
     return render(request, 'nutrition_log/weekly.html', context)
+
+
+def get_avg_daily_weight(daily_weights):
+    """Get avg daily weight from queryset"""
+    if len(daily_weights) == 0:
+        return 0
+    sumWt = 0
+    for dw in daily_weights:
+        sumWt += dw.weight
+    return sumWt / len(daily_weights)
 
 
 def get_list_of_dates(start, end):
