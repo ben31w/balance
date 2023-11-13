@@ -15,7 +15,7 @@ UNITS = Unit.objects.all()
 @login_required
 def daily(request):
     """Load the daily page for the Nutrition Log"""
-    return render(request, 'nutrition_log/daily.html')
+    return filter_nutrition_log(request)
 
 
 @login_required
@@ -31,16 +31,13 @@ def filter_nutrition_log(request):
     
     selected_date = request.GET.get('selectedDate')
     if not selected_date:
-        # update to better handling later.
-        return render(request, 'nutrition_log/daily.html')
+        selected_date = datetime.date.today()
 
     # Get the daily weight
     try:
         daily_weight = daily_weights.get(date=selected_date).weight
-        print(daily_weight)
     except ObjectDoesNotExist:
         daily_weight = "---"
-        print(daily_weight)
     
     # Get the relevant logged food items for the selected date, 
     #  and store them as strings that can be rendered in HTML later.
@@ -108,12 +105,10 @@ def filter_progress_table(request):
     daily_weights = DailyWeight.objects.filter(user=request.user).filter(
         date__range=[f"{start_str}", f"{end_str}"])
     
-    # Get avg wt or return early if there are no daily weights logged
-    if len(daily_weights) == 0:
-        alert = "You haven't logged any weights for these dates yet"
-        context = {'alert': alert}
-        return render(request, 'nutrition_log/weekly.html', context)
+    # Get avg wt
     avgWt = get_avg_daily_weight(daily_weights)
+
+    # TODO Get calories for each date between start and end date
 
     context = {'daily_weights': daily_weights, 'dates': dates, 'avgWt': round(avgWt, 2)}
     return render(request, 'nutrition_log/weekly.html', context)
