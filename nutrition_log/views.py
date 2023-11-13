@@ -86,39 +86,34 @@ def get_selected_date(request):
 
 
 @login_required
-def filter_progress_table(request):
-    """
-    This function is called when the user submits a start and end date in 
-    the Weekly/Progress page.
-    """
-    start_str = request.GET.get('startDate')
-    end_str = request.GET.get('endDate')
-
-    # Error checking for start and end date inputs
-    if not start_str or not end_str:
+def weekly(request):
+    """Load the weekly page"""
+    start_date_str = request.GET.get('startDate')
+    end_date_str = request.GET.get('endDate')
+    
+    # Verify start date and end date are valid.
+    if not start_date_str or not end_date_str:
         alert = "You must fill out both a start date and an end date"
         context = {'alert': alert}
         return render(request, 'nutrition_log/weekly.html', context)
-    elif end_str < start_str:
+    elif end_date_str < start_date_str:
         alert = "End date must be after start date"
         context = {'alert': alert}
         return render(request, 'nutrition_log/weekly.html', context)
 
-    # Get dates between start and end date as date objects
-    start_date = datetime.datetime.strptime(start_str, '%Y-%m-%d').date()
-    end_date = datetime.datetime.strptime(end_str, '%Y-%m-%d').date()
-    dates = get_list_of_dates(start_date, end_date)
-    
-    # Get Daily Weights logged between start and end date, inclusive
-    daily_weights = DailyWeight.objects.filter(user=request.user).filter(
-        date__range=[f"{start_str}", f"{end_str}"])
-    
-    # Get avg wt
-    avgWt = get_avg_daily_weight(daily_weights)
+    dates = get_list_of_dates(start_date_str, end_date_str)
+    actual_daily_weights = DailyWeight.objects.filter(user=request.user).filter(date__range=[f"{start_date_str}", f"{end_date_str}"])
+    padded_daily_weights = get_padded_daily_weights(dates, actual_daily_weights)
+    avgWt = get_avg_daily_weight(actual_daily_weights)
+    daily_calories = get_list_of_calories(request, dates)
 
-    # TODO Get calories for each date between start and end date
 
-    context = {'daily_weights': daily_weights, 'dates': dates, 'avgWt': round(avgWt, 2)}
+    # zip these lists so they can be used more efficiently in the template
+    lists = zip(dates, padded_daily_weights, daily_calories)
+    context = {
+        'lists': lists,
+        'avgWt': round(avgWt, 2),
+    }
     return render(request, 'nutrition_log/weekly.html', context)
 
 
@@ -132,10 +127,37 @@ def get_avg_daily_weight(daily_weights):
     return sumWt / len(daily_weights)
 
 
-def get_list_of_dates(start, end):
+def get_padded_daily_weights(dates, actual_daily_weights):
+    """
+    Get list of daily weights for these dates.
+    However, if there is a date without a weight, insert '---' as filler
+    """
+    return_weights = []
+    for date in dates:
+        try:
+            dw = actual_daily_weights.get(date=date)
+            return_weights.append(dw.weight)
+        except ObjectDoesNotExist:
+            return_weights.append('---')
+    return return_weights
+
+
+def get_list_of_calories(request, dates):
+    """Get a list of the user's calories for these dates"""
+    calories_list = []
+    for date in dates:
+        _, daily_calories, _ = get_logged_food_items_stats(request, date)
+        calories_list.append(daily_calories)
+    return calories_list
+
+
+def get_list_of_dates(start_date_str, end_date_str):
     """
     Get list of dates between the start date and end date (inclusive).
     """
+    start = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+    end = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    
     delta_in_days = (end - start).days
     dates = [start]
     for i in range(1, delta_in_days + 1):
@@ -198,12 +220,4 @@ def set_weight(request):
     context = {'form': form}
     return render(request, 'nutrition_log/set_weight.html', context)
 
-
-@login_required
-def weekly(request):
-    """Load the weekly page"""
-    alert = ('Enter a start and end date, and press submit to view your calories '
-              'and weight between those dates')
-    context = {'alert': alert}
-    return render(request, 'nutrition_log/weekly.html', context)
 

@@ -5,7 +5,7 @@
     <h1>My Nutrition Log</h1>
     <h2>Progress Table</h2>
 
-    <form action="{% url 'nutrition_log:filter_progress_table' %}" method="get">
+    <form action="{% url 'nutrition_log:weekly' %}" method="get">
         <label for="startDateInput">Start Date:</label>
         <input type="date" id="startDateInput" name="startDate">
         <br>
@@ -26,14 +26,11 @@
                 <th>WT</th>
                 <th>Cal</th>
             </tr>
-            {% for date in dates %}
+            {% for date, weight, num_calories in lists %}
             <tr>
                 <td>{{ date }}</td>
-                {% for daily_weight in daily_weights %}
-                    {% if daily_weight.date == date %}
-                        <td>{{ daily_weight.weight }}</td>
-                    {% endif %}
-                {% endfor %}
+                <td>{{ weight }}</td>
+                <td>{{ num_calories }}</td>
             </tr>
             {% endfor %}
         </table>
