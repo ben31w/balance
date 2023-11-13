@@ -15,43 +15,45 @@ UNITS = Unit.objects.all()
 @login_required
 def daily(request):
     """Load the daily page for the Nutrition Log"""
-    return filter_nutrition_log(request)
-
-
-@login_required
-def filter_nutrition_log(request):
-    """
-    This function is called when the user submits a new date in the datepicker.
-    Get the relevant information for this date that should be rendered, and
-    pass it to daily.html
-    Info to pass includes the user's daily weight, total calories, etc.
-    """
-    daily_weights = DailyWeight.objects.filter(user=request.user)
-    logged_food_items = LoggedFoodItem.objects.filter(user=request.user)
+    date = get_selected_date(request)
+    daily_wt = get_daily_weight(request, date)
+    strings, calories, protein = get_logged_food_items_stats(request, date)
     
-    selected_date = request.GET.get('selectedDate')
-    if not selected_date:
-        selected_date = datetime.date.today()
+    context = {
+        'daily_weight': daily_wt, 
+        'logged_food_items': strings, 
+        'total_calories': calories,
+        'total_protein': protein
+    }
+    return render(request, 'nutrition_log/daily.html', context)
 
-    # Get the daily weight
+
+def get_daily_weight(request, date):
+    """Get daily weight for the given date. Or return '---' if there is none."""
+    daily_weights = DailyWeight.objects.filter(user=request.user)
     try:
-        daily_weight = daily_weights.get(date=selected_date).weight
+        daily_weight = daily_weights.get(date=date).weight
     except ObjectDoesNotExist:
         daily_weight = "---"
-    
-    # Get the relevant logged food items for the selected date, 
-    #  and store them as strings that can be rendered in HTML later.
-    #  string format: 'Chicken breast (raw), 1x100g'
-    # Also store the calories of each food item the user has logged.
-    # Not currently doing much with calories list, just getting the sum
-    # but it may be useful to keep this in a separate list for rendering purposes later
-    relevant_items = []
+    return daily_weight
+
+
+def get_logged_food_items_stats(request, date):
+    """
+    Search through the user's logged food items for this date. 
+    Return three things:
+        - list of logged food item strings that can be rendered in HTML later.
+        - total calories
+        - total protein
+    """
+    strings = []
     calories_list = []
     protein_list = []
+
+    logged_food_items = LoggedFoodItem.objects.filter(user=request.user)
     for logged_food_item in logged_food_items:
-        # for some reason, this comparison only works when the dates are
-        #  casted as strings.
-        if str(logged_food_item.date) == str(selected_date):
+        # dates must be cast as strings for this comparison to work.
+        if str(logged_food_item.date) == str(date):
             unit = UNITS.get(id=logged_food_item.unit.id)
             quantity = logged_food_item.quantity
 
@@ -62,19 +64,22 @@ def filter_nutrition_log(request):
             protein_list.append(protein)
             
             lfi_str = f"{logged_food_item.food_item.name}, {quantity}x{unit.name}  |  {calories} Calories | {protein}g Protein"
-            relevant_items.append(lfi_str)
-            
+            strings.append(lfi_str)
     total_calories = sum(calories_list)
     total_protein = sum(protein_list)
-    
 
-    context = {
-        'daily_weight': daily_weight, 
-        'logged_food_items': relevant_items, 
-        'total_calories': total_calories,
-        'total_protein': total_protein
-    }
-    return render(request, 'nutrition_log/daily.html', context)
+    return strings, total_calories, total_protein
+
+
+def get_selected_date(request):
+    """
+    Get the date that the user submitted in the dateInput on the daily page.
+    Or load today's date by default.
+    """
+    selected_date = request.GET.get('selectedDate')
+    if not selected_date:
+        selected_date = datetime.date.today()
+    return selected_date
 
 
 @login_required
