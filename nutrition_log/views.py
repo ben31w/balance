@@ -20,6 +20,7 @@ def daily(request):
     strings, calories, protein = get_logged_food_items_stats(request, date)
     
     context = {
+        'date': date,
         'daily_weight': daily_wt, 
         'logged_food_items': strings, 
         'total_calories': calories,
@@ -76,6 +77,8 @@ def get_selected_date(request):
     Get the date that the user submitted in the dateInput on the daily page.
     Or load today's date by default.
     """
+    # TODO GET.get formats date as  YYYY-mm-dd
+    # today() formats date as       Month. dd, YYYY
     selected_date = request.GET.get('selectedDate')
     if not selected_date:
         selected_date = datetime.date.today()

@@ -6,12 +6,7 @@
     <h2>Daily View</h2>
 
  
-    <!-- TODO this Date label isn't updating
-        Date label might not be the best way to go about this. -->
-    <!-- <p id="currentDateLabel">
-        Current Date: 
-        <span id="currentDate"></span>
-    </p> -->
+    <p>{{ date }}</p>
 
     <!-- Date picker -->
     <form action="{% url 'nutrition_log:daily' %}" method="get">
@@ -36,7 +31,7 @@
             {{ lfi }}
         </li>
         {% empty %}
-        <p>You haven't logged anything today.</p>
+        <p>You haven't logged anything {{ date }}.</p>
         {% endfor %}
     </ul>
 
