@@ -6,10 +6,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 
 from .forms import DailyWeightForm, LogFoodItemForm
-from .models import DailyWeight, FoodItem, LoggedFoodItem, Unit
+from .models import DailyWeight, LoggedFoodItem, Unit
 
 
 UNITS = Unit.objects.all()
+
+
+@login_required
+def index(request):
+    """"Load the summary/home page for the Nutrition Log"""
+    return render(request, 'nutrition_log/index.html')
 
 
 @login_required
@@ -27,6 +33,54 @@ def daily(request):
         'total_protein': protein
     }
     return render(request, 'nutrition_log/daily.html', context)
+
+
+@login_required
+def log_food_item(request):
+    """Load a form where the user can log a food item"""
+    if request.method == 'POST':
+       form = LogFoodItemForm(data=request.POST)
+       logged_food_item = form.save(commit=False)
+       logged_food_item.user = request.user
+       logged_food_item.save()
+       return redirect('nutrition_log:daily')
+    else:
+        form = LogFoodItemForm()
+    context = {'form': form}
+    return render(request, 'nutrition_log/log_food_item.html', context)
+
+
+@login_required
+def set_weight(request):
+    """Load a page where user can enter their daily weight"""
+    if request.method == 'POST':
+        form = DailyWeightForm(data=request.POST)
+        if form.is_valid():
+            new_weight = form.save(commit=False)
+            # Before saving this instance, we need to check if an instance with
+            #  this date already exists. If one already exists, update the 
+            #  existing entry instead of creating a duplicate.
+            try:
+                old_weight = DailyWeight.objects.filter(user=request.user).get(date=new_weight.date)
+                # An instance with this date exists, so edit it
+                
+                # If the user entered 0, they are trying to remove the weight they entered
+                if new_weight.weight == 0:
+                    old_weight.delete()
+                # Otherwise update the weight
+                else:
+                    old_weight.weight = new_weight.weight
+                    old_weight.save()
+            except ObjectDoesNotExist:
+                # No instance with this date exists, so we're good to make one!
+                new_weight.user = request.user
+                new_weight.save()
+            finally:
+                return redirect('nutrition_log:daily')
+    else:
+        form = DailyWeightForm()
+    context = {'form': form}
+    return render(request, 'nutrition_log/set_weight.html', context)
 
 
 def get_daily_weight(request, date):
@@ -107,7 +161,6 @@ def weekly(request):
     avgWt = get_avg_daily_weight(actual_daily_weights)
     daily_calories = get_list_of_calories(request, dates)
 
-
     # zip these lists so they can be used more efficiently in the template
     lists = zip(dates, padded_daily_weights, daily_calories)
     context = {
@@ -164,60 +217,5 @@ def get_list_of_dates(start_date_str, end_date_str):
         d = start + relativedelta(days=i)
         dates.append(d)
     return dates
-
-
-@login_required
-def index(request):
-    """"Load the summary/home page for the Nutrition Log"""
-    return render(request, 'nutrition_log/index.html')
-
-
-@login_required
-def log_food_item(request):
-    """Load a form where the user can log a food item"""
-    if request.method == 'POST':
-       form = LogFoodItemForm(data=request.POST)
-       logged_food_item = form.save(commit=False)
-       logged_food_item.user = request.user
-       logged_food_item.save()
-       return redirect('nutrition_log:daily')
-    else:
-        form = LogFoodItemForm()
-    context = {'form': form}
-    return render(request, 'nutrition_log/log_food_item.html', context)
-
-
-@login_required
-def set_weight(request):
-    """Load a page where user can enter their daily weight"""
-    if request.method == 'POST':
-        form = DailyWeightForm(data=request.POST)
-        if form.is_valid():
-            new_weight = form.save(commit=False)
-            # Before saving this instance, we need to check if an instance with
-            #  this date already exists. If one already exists, update the 
-            #  existing entry instead of creating a duplicate.
-            try:
-                old_weight = DailyWeight.objects.filter(user=request.user).get(date=new_weight.date)
-                # An instance with this date exists, so edit it
-                
-                # If the user entered 0, they are trying to remove the weight they entered
-                if new_weight.weight == 0:
-                    old_weight.delete()
-                    return redirect('nutrition_log:daily')
-                
-                # Otherwise update the weight
-                old_weight.weight = new_weight.weight
-                old_weight.save()
-                return redirect('nutrition_log:daily')
-            except ObjectDoesNotExist:
-                # No instance with this date exists, so we're good to make one!
-                new_weight.user = request.user
-                new_weight.save()
-                return redirect('nutrition_log:daily')
-    else:
-        form = DailyWeightForm()
-    context = {'form': form}
-    return render(request, 'nutrition_log/set_weight.html', context)
 
 
