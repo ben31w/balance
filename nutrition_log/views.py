@@ -219,3 +219,7 @@ def get_list_of_dates(start_date_str, end_date_str):
     return dates
 
 
+@login_required
+def charts(request):
+    """Load the charts page"""
+    return render(request, 'nutrition_log/charts.html')
