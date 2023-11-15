@@ -108,21 +108,19 @@ def get_logged_food_items_stats(request, date):
     calories_list = []
     protein_list = []
 
-    logged_food_items = LoggedFoodItem.objects.filter(user=request.user)
+    logged_food_items = LoggedFoodItem.objects.filter(user=request.user).filter(date=date)
     for logged_food_item in logged_food_items:
-        # dates must be cast as strings for this comparison to work.
-        if str(logged_food_item.date) == str(date):
-            unit = UNITS.get(id=logged_food_item.unit.id)
-            quantity = logged_food_item.quantity
+        unit = UNITS.get(id=logged_food_item.unit.id)
+        quantity = logged_food_item.quantity
 
-            calories = quantity * unit.calsPerUnit
-            calories_list.append(calories)
+        calories = quantity * unit.calsPerUnit
+        calories_list.append(calories)
 
-            protein = quantity * unit.proPerUnit
-            protein_list.append(protein)
+        protein = quantity * unit.proPerUnit
+        protein_list.append(protein)
 
-            lfi_str = f"{logged_food_item.food_item.name}, {quantity}x{unit.name}  |  {calories} Calories | {protein}g Protein"
-            strings.append(lfi_str)
+        lfi_str = f"{logged_food_item.food_item.name}, {quantity}x{unit.name}  |  {calories} Calories | {protein}g Protein"
+        strings.append(lfi_str)
     total_calories = sum(calories_list)
     total_protein = sum(protein_list)
 
