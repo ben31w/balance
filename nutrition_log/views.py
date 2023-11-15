@@ -226,12 +226,43 @@ def get_list_of_dates(start_date_str, end_date_str):
 def charts(request):
     """Load the charts page"""
     return render(request, 'nutrition_log/charts.html')
-    
+
+
+def create_chart(x_pts, y_pts, x_label, y_label, filepath):
+    """
+    Create a line chart with the given data and filepath.
+    Note:
+    filepath arg is relative to 'balance/' 
+    while the arg for render() is relative to 'balance/nutrition_log/templates/'
+    """
+    fig = px.scatter(x=x_pts, y=y_pts, labels={"x": x_label, "y": y_label})
+    fig.write_html(file=f"nutrition_log/templates/{filepath}")
+
 
 @login_required
 def create_calories_chart(request):
     """Create a daily calories vs time chart for the user, and load a page to display it"""
-    return
+    logged_food_items = LoggedFoodItem.objects.filter(user=request.user).order_by("date")
+    if len(logged_food_items) == 0:
+        alert = "You haven't logged any food items yet."
+        context = {'alert': alert}
+        return render(request, "nutrition_log/charts.html", context)
+    
+    # Get dates
+    dates = []
+    for lfi in logged_food_items:
+        if lfi.date not in dates:
+            dates.append(lfi.date)
+    # Get calories for each date
+    calories_list = []
+    for date in dates:
+        _, calories, _ = get_logged_food_items_stats(request, date=date)
+        calories_list.append(calories)
+
+    # Create and render chart
+    filename = f"charts/{request.user}-calories.html"
+    create_chart(dates, calories_list, 'Date', 'Daily Calories', filename)
+    return render(request, filename)
 
 
 @login_required
@@ -252,11 +283,6 @@ def create_weight_chart(request):
 
     # easier approach that is actually implemented:
     # just do what the workout log does, and open the HTML directly.
-
-    fig = px.scatter(x=dates, y=weights, labels={"x": "date", "y": "weight"})
-    # file arg is relative to 'balance/'
     filename = f"charts/{request.user}-weight.html"
-    fig.write_html(file=f"nutrition_log/templates/{filename}", include_plotlyjs="cdn")
-
-    # however, render's arg is relative to 'balance/nutrition_log/templates/'
+    create_chart(dates, weights, 'Date', 'Weight', filename)
     return render(request, filename)

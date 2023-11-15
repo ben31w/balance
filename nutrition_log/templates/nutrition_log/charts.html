@@ -7,6 +7,11 @@
 
     <p>{{alert}}</p>
 
-    <a href="{% url 'nutrition_log:create_weight_chart' %}">Body weight over time</a>
+    <p>
+        <a href="{% url 'nutrition_log:create_weight_chart' %}">Body weight over time</a>
+    </p>
+    <p>
+        <a href="{% url 'nutrition_log:create_calories_chart' %}">Calorie intake over time</a>
+    </p>
 {% endblock subcontent %}
 
