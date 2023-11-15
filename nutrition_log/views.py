@@ -227,9 +227,23 @@ def get_list_of_dates(start_date_str, end_date_str):
 @login_required
 def charts(request):
     """Load the charts page"""
+    return render(request, 'nutrition_log/charts.html')
+    
+
+@login_required
+def create_calories_chart(request):
+    """Create a daily calories vs time chart for the user, and load a page to display it"""
+    return
+
+
+@login_required
+def create_weight_chart(request):
+    """Create a weight vs time chart for the user, and load a page to display it"""
     daily_weights = DailyWeight.objects.filter(user=request.user).order_by("date")
     if len(daily_weights) == 0:
-        return render(request, "nutrition_log/charts.html")
+        alert = "You haven't logged any daily weights yet."
+        context = {'alert': alert}
+        return render(request, "nutrition_log/charts.html", context)
 
     dates = [dw.date for dw in daily_weights]
     weights = [dw.weight for dw in daily_weights]
