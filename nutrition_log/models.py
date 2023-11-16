@@ -77,3 +77,12 @@ class LoggedFoodItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.username} | {self.date} | {self.food_item} | {self.quantity} | {self.unit.name} | {self.meal}"
+
+
+class Goals(models.Model):
+    """
+    The fitness goals of a user. This class is not a standalone model. It is a 
+    collection of additional fields to track about a user ('profile model').
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    targetCalories = models.IntegerField()
