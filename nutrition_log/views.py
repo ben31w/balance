@@ -15,8 +15,13 @@ UNITS = Unit.objects.all()
 
 @login_required
 def index(request):
-    """ "Load the summary/home page for the Nutrition Log"""
-    return render(request, "nutrition_log/index.html")
+    """Load the summary/home page for the Nutrition Log"""
+    try:
+        targetCals = request.user.goals.targetCalories
+    except ObjectDoesNotExist:
+        targetCals = 0
+    context = {'targetCals': targetCals}
+    return render(request, "nutrition_log/index.html", context)
 
 
 @login_required
