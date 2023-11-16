@@ -8,6 +8,13 @@
         <strong>{{ targetCals }}</strong> - 
         <a href="{% url 'nutrition_log:set_target_calories' %}">Set target</a>
     </p>
-    <p>Current body weight (weekly avg): </p>
+    <p>
+        Current body weight (weekly avg): 
+        {% if weeklyAvg %}
+            <strong>{{ weeklyAvg }}</strong>
+        {% else %}
+            Log some weights for this week to see your weekly average!
+        {% endif %}
+    </p>
     <p>Target protein: </p>
 {% endblock subcontent %}

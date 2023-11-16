@@ -16,12 +16,37 @@ UNITS = Unit.objects.all()
 @login_required
 def index(request):
     """Load the summary/home page for the Nutrition Log"""
+    # Info to get for the home page: target calories, weekly average body weight,
+    #  target protein based on current weight.
+    targetCals = get_target_calories(request)
+    weeklyAvg = get_curr_weekly_weight(request)
+    
+    context = {'targetCals': targetCals, 'weeklyAvg': weeklyAvg}
+    return render(request, "nutrition_log/index.html", context)
+
+
+def get_target_calories(request):
+    """Get the user's target calories or return 0 if it's unspecified"""
     try:
         targetCals = request.user.goals.target_calories
     except ObjectDoesNotExist:
         targetCals = 0
-    context = {'targetCals': targetCals}
-    return render(request, "nutrition_log/index.html", context)
+    return targetCals
+
+
+def get_curr_weekly_weight(request):
+    """
+    Get the user's average body weight for the current week.
+    Return 0 if the user hasn't logged anything.
+    """
+    curr_date = datetime.date.today()
+    curr_weekday = curr_date.isoweekday()
+    sunday = datetime.date(curr_date.year, curr_date.month, curr_date.day - curr_weekday)
+
+    weekly_weights = DailyWeight.objects.filter(user=request.user).filter(
+        date__range=[f"{sunday}", f"{curr_date}"]
+    )
+    return round(get_avg_weight(weekly_weights), 2)
 
 
 def set_target_calories(request):
@@ -187,7 +212,7 @@ def weekly(request):
         date__range=[f"{start_date_str}", f"{end_date_str}"]
     )
     padded_daily_weights = get_padded_daily_weights(dates, actual_daily_weights)
-    avgWt = get_avg_daily_weight(actual_daily_weights)
+    avgWt = get_avg_weight(actual_daily_weights)
     daily_calories = get_list_of_calories(request, dates)
 
     # zip these lists so they can be used more efficiently in the template
@@ -199,8 +224,8 @@ def weekly(request):
     return render(request, "nutrition_log/weekly.html", context)
 
 
-def get_avg_daily_weight(daily_weights):
-    """Get avg daily weight from queryset"""
+def get_avg_weight(daily_weights):
+    """Get avg daily weight from a queryset of daily weights"""
     if len(daily_weights) == 0:
         return 0
     sumWt = 0
