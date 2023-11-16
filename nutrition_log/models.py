@@ -85,4 +85,4 @@ class Goals(models.Model):
     collection of additional fields to track about a user ('profile model').
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    targetCalories = models.IntegerField()
+    target_calories = models.IntegerField()

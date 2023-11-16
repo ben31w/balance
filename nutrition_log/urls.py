@@ -16,4 +16,5 @@ urlpatterns = [
     path('charts', views.charts, name='charts'),
     path('charts/bodyweight', views.create_weight_chart, name='create_weight_chart'),
     path('charts/calories', views.create_calories_chart, name='create_calories_chart'),
+    path('set_target_calories', views.set_target_calories, name='set_target_calories'),
 ]

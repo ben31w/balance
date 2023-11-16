@@ -8,7 +8,7 @@ from datetime import date
 
 from django import forms
 
-from .models import DailyWeight, LoggedFoodItem
+from .models import DailyWeight, LoggedFoodItem, Goals
 
 
 class DailyWeightForm(forms.ModelForm):
@@ -29,3 +29,10 @@ class LogFoodItemForm(forms.ModelForm):
         model = LoggedFoodItem
         fields = ['date', 'food_item', 'unit', 'quantity', 'meal']
         widgets = {'date': forms.SelectDateWidget()}
+
+
+class TargetCaloriesForm(forms.ModelForm):
+    """Form where users can set their target calories"""
+    class Meta:
+        model = Goals
+        fields = ['target_calories']

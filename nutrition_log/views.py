@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 import plotly.express as px
 
-from .forms import DailyWeightForm, LogFoodItemForm
+from .forms import DailyWeightForm, LogFoodItemForm, TargetCaloriesForm
 from .models import DailyWeight, LoggedFoodItem, Unit
 
 
@@ -17,11 +17,32 @@ UNITS = Unit.objects.all()
 def index(request):
     """Load the summary/home page for the Nutrition Log"""
     try:
-        targetCals = request.user.goals.targetCalories
+        targetCals = request.user.goals.target_calories
     except ObjectDoesNotExist:
         targetCals = 0
     context = {'targetCals': targetCals}
     return render(request, "nutrition_log/index.html", context)
+
+
+def set_target_calories(request):
+    """Load a page where a user can enter their target calories"""
+    if request.method == "POST":
+        form = TargetCaloriesForm(data=request.POST)
+        if form.is_valid():
+            new_target = form.save(commit=False)
+            # Check if an instance already exists. Delete if so.
+            #  TODO A better scheme would probably be to set each user's default to 0.
+            try:
+                old_goals = request.user.goals
+                old_goals.delete()
+            finally:
+                new_target.user = request.user
+                new_target.save()
+                return redirect("nutrition_log:index")
+    else:
+        form = TargetCaloriesForm()
+    context = {"form": form}
+    return render(request, "nutrition_log/set_target_calories.html", context)
 
 
 @login_required

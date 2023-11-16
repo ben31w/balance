@@ -5,7 +5,8 @@
 
     <p>
         Target calories: 
-        <strong>{{ targetCals }}</strong>
+        <strong>{{ targetCals }}</strong> - 
+        <a href="{% url 'nutrition_log:set_target_calories' %}">Set target</a>
     </p>
     <p>Current body weight (weekly avg): </p>
     <p>Target protein: </p>
