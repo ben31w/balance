@@ -3,7 +3,6 @@ Views for the Workout Log app.
 """
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
-from django.http import Http404
 from django.shortcuts import render, redirect
 import plotly.graph_objects as go
 

@@ -1,0 +1,23 @@
+<!--
+Base template for the Workout Designer app
+Inherit from overall base template, and define a Workout Designer navbar with
+links to create a routine and view all routines.
+-->
+
+{% extends 'commons/base.html' %}
+
+{% block title %}
+    Workout Designer
+{% endblock title %}
+
+{% block content %}
+  <p>
+    <strong>Views: </strong>
+    <a href="">My Workouts</a> -
+    <a href="">Make me a Workout</a> - 
+    <a href="">Create my own Workout</a>
+  </p>
+
+  <!-- Content of children -->
+  {% block subcontent %}{% endblock subcontent %}
+{% endblock content %}

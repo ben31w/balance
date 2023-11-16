@@ -23,4 +23,5 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('workout_log/', include('workout_log.urls')),
     path('nutrition_log/', include('nutrition_log.urls')),
+    path('workout_designer/', include('workout_designer.urls')),
 ]

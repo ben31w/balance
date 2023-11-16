@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'users',
     'workout_log',
     'nutrition_log',
+    'workout_designer',
 
     # Default Django apps
     'django.contrib.admin',
