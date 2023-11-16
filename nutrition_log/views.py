@@ -20,8 +20,9 @@ def index(request):
     #  target protein based on current weight.
     targetCals = get_target_calories(request)
     weeklyAvg = get_curr_weekly_weight(request)
+    targetPro = get_target_protein(weeklyAvg)
     
-    context = {'targetCals': targetCals, 'weeklyAvg': weeklyAvg}
+    context = {'targetCals': targetCals, 'weeklyAvg': weeklyAvg, 'targetPro': targetPro}
     return render(request, "nutrition_log/index.html", context)
 
 
@@ -47,6 +48,15 @@ def get_curr_weekly_weight(request):
         date__range=[f"{sunday}", f"{curr_date}"]
     )
     return round(get_avg_weight(weekly_weights), 2)
+
+
+def get_target_protein(curr_weight):
+    """
+    Given the user's current weight, return their target protein for the day.
+    """
+    # TODO this calculation doesn't work for people with high body fat. 
+    #  There should be a different method for these people.
+    return round(curr_weight * 0.75, 2)
 
 
 def set_target_calories(request):
