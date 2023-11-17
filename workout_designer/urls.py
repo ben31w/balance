@@ -9,4 +9,5 @@ app_name = 'workout_designer'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('create_workout', views.create_workout, name='create_workout')
 ]

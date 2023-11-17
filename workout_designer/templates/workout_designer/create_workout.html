@@ -1,0 +1,72 @@
+<!--
+This form is where the user enters their fitness goals 
+and needs (ex time constraints), and they receive a custom
+workout.
+-->
+
+{% extends 'workout_designer/base.html' %}
+
+{% block subcontent %}
+    <h1>Workout Designer</h1>
+
+    <p>
+        Fill out this form to get a balanced workout plan,
+        tailored to your needs and goals.
+    </p>
+    <form action="{% url 'nutrition_log:daily' %}" method="get">
+
+        <fieldset>
+            <legend>Preferred schedule?</legend>
+            <label>
+                <input type="radio" name="schedule" value="sync">Synchronous
+            </label><br>
+            <label>
+                <input type="radio" name="schedule" value="async">Asynchronous
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>How long are you willing to spend on each workout?</legend>
+            <label>Upper limit: </label>
+            <input type="number" name="upperLimitHrs"><label>hrs</label>
+            <input type="number" name="upperLimitMin"><label>min</label>
+            <br>
+            
+            <label>Lower limit: </label>
+            <input type="number" name="lowerLimitHrs"><label>hrs</label>
+            <input type="number" name="lowerLimitMin"><label>min</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Which best describes your motivation for working out?</legend>
+            <label>
+                <input type="radio" name="goal" value="sync">Serious about gaining muscle
+            </label><br>
+            <label>
+                <input type="radio" name="goal" value="async">Looking to get or stay in shape
+            </label>
+        </fieldset>
+
+
+        <fieldset>
+            <legend>Preferred split?</legend>
+            <label>
+                <input type="radio" name="split" value="anything" checked="checked">Anything
+            </label><br>
+            <label>
+                <input type="radio" name="split" value="arnold">Arnold
+            </label><br>
+            <label>
+                <input type="radio" name="split" value="bro">Bro
+            </label><br>
+            <label>
+                <input type="radio" name="split" value="arnold">Push-Pull-Legs
+            </label><br>
+            <label>
+                <input type="radio" name="split" value="anything">Upper-Lower
+            </label>
+        </fieldset>
+  <br>  
+        <input type="submit" value="Submit">
+    </form>
+{% endblock subcontent %}
