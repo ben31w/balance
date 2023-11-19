@@ -38,31 +38,24 @@ workout.
 
         <fieldset>
             <legend>Which best describes your motivation for working out?</legend>
-            <label>
-                <input type="radio" name="goal" value="sync">Serious about gaining muscle
-            </label><br>
-            <label>
-                <input type="radio" name="goal" value="async">Looking to get or stay in shape
-            </label>
+            <label for="muscle">Serious about gaining muscle</label>
+            <input type="radio" id="muscle" name="goal" value="muscle"><br>
+            <label for="fit">Looking to get or stay in shape</label>
+            <input type="radio" id="fit" name="goal" value="fit">
         </fieldset>
 
         <fieldset>
             <legend>Preferred split?</legend>
-            <label>
-                <input type="radio" name="split" value="anything" checked="checked">Anything
-            </label><br>
-            <label>
-                <input type="radio" name="split" value="arnold">Arnold
-            </label><br>
-            <label>
-                <input type="radio" name="split" value="bro">Bro
-            </label><br>
-            <label>
-                <input type="radio" name="split" value="arnold">Push-Pull-Legs
-            </label><br>
-            <label>
-                <input type="radio" name="split" value="anything">Upper-Lower
-            </label>
+            <label id="anything">Anything</label>
+            <input type="radio" id="anything" name="split" value="anything" checked="checked"><br>
+            <label id="arnold">Arnold</label>
+            <input type="radio" id="arnold" name="split" value="arnold"><br>
+            <label id="bro">Bro</label>
+            <input type="radio" id="bro" name="split" value="bro"><br>
+            <label for="ppl">Push-Pull-Legs</label>
+            <input type="radio" id="ppl" name="split" value="ppl"><br>
+            <label for="ul">Upper-Lower</label>
+            <input type="radio" id="ul" name="split" value="ul">
         </fieldset><br>
 
         <input type="submit" value="Submit">
