@@ -17,11 +17,11 @@ workout.
         {% csrf_token %}
 
         <fieldset>
-            <legend>Preferred schedule?</legend>
+            <legend>*Preferred schedule?</legend>
             <label for="sync">Synchronous</label>
-            <input type="radio" id="sync" name="schedule" value="sync"><br>
+            <input type="radio" id="sync" name="schedule" value="sync" required><br>
             <label for="async">Asynchronous</label>
-            <input type="radio" id="async" name="schedule" value="async">
+            <input type="radio" id="async" name="schedule" value="async" required>
         </fieldset>
 
         <fieldset>
@@ -37,11 +37,11 @@ workout.
         </fieldset>
 
         <fieldset>
-            <legend>Which best describes your motivation for working out?</legend>
+            <legend>*Which best describes your motivation for working out?</legend>
             <label for="muscle">Serious about gaining muscle</label>
-            <input type="radio" id="muscle" name="goal" value="muscle"><br>
+            <input type="radio" id="muscle" name="goal" value="muscle" required><br>
             <label for="fit">Looking to get or stay in shape</label>
-            <input type="radio" id="fit" name="goal" value="fit">
+            <input type="radio" id="fit" name="goal" value="fit" required>
         </fieldset>
 
         <fieldset>

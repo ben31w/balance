@@ -22,6 +22,15 @@ def create_workout(request):
         lower_limit = get_minutes(lower_hr_str, lower_min_str)
         upper_limit = get_minutes(upper_hr_str, upper_min_str)
 
+        if lower_limit == 0 and upper_limit == 0:
+            lower_limit = 45
+            upper_limit = 75
+        elif lower_limit == 0:
+            lower_limit = max(upper_limit - 30, 20)
+        elif upper_limit == 0:
+            upper_limit = lower_limit + 30
+            
+
         goal = request.POST.get("goal")
 
         split = request.POST.get("split")
