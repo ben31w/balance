@@ -13,16 +13,15 @@ workout.
         Fill out this form to get a balanced workout plan,
         tailored to your needs and goals.
     </p>
-    <form action="{% url 'nutrition_log:daily' %}" method="get">
+    <form action="{% url 'workout_designer:create_workout' %}" method="post">
+        {% csrf_token %}
 
         <fieldset>
             <legend>Preferred schedule?</legend>
-            <label>
-                <input type="radio" name="schedule" value="sync">Synchronous
-            </label><br>
-            <label>
-                <input type="radio" name="schedule" value="async">Asynchronous
-            </label>
+            <label for="sync">Synchronous</label>
+            <input type="radio" id="sync" name="schedule" value="sync"><br>
+            <label for="async">Asynchronous</label>
+            <input type="radio" id="async" name="schedule" value="async">
         </fieldset>
 
         <fieldset>
@@ -47,7 +46,6 @@ workout.
             </label>
         </fieldset>
 
-
         <fieldset>
             <legend>Preferred split?</legend>
             <label>
@@ -65,8 +63,8 @@ workout.
             <label>
                 <input type="radio" name="split" value="anything">Upper-Lower
             </label>
-        </fieldset>
-  <br>  
+        </fieldset><br>
+
         <input type="submit" value="Submit">
     </form>
 {% endblock subcontent %}

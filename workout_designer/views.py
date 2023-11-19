@@ -11,5 +11,10 @@ def index(request):
 @login_required
 def create_workout(request):
     """Loads the form for creating a workout"""
+    if request.method == "POST":
+        schedule = request.POST.get("schedule")
+        print(schedule)
+    else:
+        return render(request, 'workout_designer/create_workout.html')
     return render(request, 'workout_designer/create_workout.html')
 
