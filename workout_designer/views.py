@@ -1,5 +1,10 @@
+import datetime
+from random import randrange
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+
+from workout_designer.models import Routine
 
 
 @login_required
@@ -10,7 +15,10 @@ def index(request):
 
 @login_required
 def create_workout(request):
-    """Loads the form for creating a workout"""
+    """
+    GET: Load the form for creating a workout
+    POST: Process the form for creating a workout
+    """
     if request.method == "POST":
         schedule = request.POST.get("schedule")
         lower_hr_str = request.POST.get("lowerLimitHrs")
@@ -21,18 +29,49 @@ def create_workout(request):
         goal = request.POST.get("goal")
         split = request.POST.get("split")
 
-        print(schedule)
-        print(f"Lower limit: {lower_limit}")
-        print(f"Upper limit: {upper_limit}")
-        print(goal)
-        print(split)
-
-        # create Routine
-        # create Days for Routine
-        # create Planned Sets for Routine
+        create_routine(request, schedule, upper_limit, lower_limit, split, goal)
     else:
         return render(request, 'workout_designer/create_workout.html')
     return render(request, 'workout_designer/create_workout.html')
+
+
+@login_required
+def create_routine(request, schedule, upper_limit, lower_limit, split, goal):
+    """
+    Create a Routine given these parameters
+    - request : indicates the user
+    - schedule : sync or async
+    - upper_limit: upper workout limit in min
+    - lower_limit: lower workout limit in min
+    - split: Anything, Arnold, Bro, Push-Pull-Legs, Upper-Lower
+    - goal: musc or fit
+    """
+    r = Routine()
+    r.name = split
+    r.date_created = datetime.date.today()
+    r.user = request.user
+    r.is_synchronous = schedule == "sync"
+    if split == 'Anything':
+        choices = [abreviation for abreviation,_ in Routine.SPLIT_CHOICES]
+        rand = randrange(len(choices))
+        r.split = choices[rand]
+    else:
+        r.split = split
+    r.lower_limit_min = lower_limit
+    r.upper_limit_min = upper_limit
+    r.is_muscle_focused = goal == "musc"
+    r.save()
+    create_days_for_routine(r)
+
+
+@login_required
+def create_days_for_routine(routine):
+    """Create days"""
+    if routine.is_synchronous:
+        print("yes")
+    else:
+        print("no")
+
 
 
 def get_limits(lower_hr_str, lower_min_str, upper_hr_str, upper_min_str):

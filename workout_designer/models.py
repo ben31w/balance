@@ -26,7 +26,7 @@ class Routine(models.Model):
     is_muscle_focused = models.BooleanField()
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.name} | {self.split}"
 
 
 class Day(models.Model):
