@@ -26,23 +26,36 @@ class Routine(models.Model):
     is_muscle_focused = models.BooleanField()
 
     def __str__(self) -> str:
-        return f"{self.name} | {self.split}"
+        return f"{self.id}: {self.name}"
 
 
 class Day(models.Model):
     """A day in a routine. Ex: Push day, Back-Chest day, Lower day."""
+    PUSH = "PUSH"
+    PULL = "PULL"
+    LEGS = "LEGS"
+    UPPER = "UPPER"
+    LOWER = "LOWER"
+    CHEST = "CHEST"
+    BACK = "BACK"
+    SHOULDERS = "SHOULDERS"
+    ARMS = "ARMS"
+    BC = "BC"
+    SA = "SA"
+    REST = "REST"
     TYPES_OF_DAYS = [
-        ("Push", "Push"),
-        ("Pull", "Pull"),
-        ("Legs", "Legs"),
-        ("Upper", "Upper"),
-        ("Lower", "Lower"),
-        ("Chest", "Chest"),
-        ("Back", "Back"),
-        ("Shoulders", "Shoulders"),
-        ("Arms", "Arms"),
-        ("BC", "Back-Chest"),
-        ("SA", "Shoulders-Arms"),
+        (PUSH, "Push"),
+        (PULL, "Pull"),
+        (LEGS, "Legs"),
+        (UPPER, "Upper"),
+        (LOWER, "Lower"),
+        (CHEST, "Chest"),
+        (BACK, "Back"),
+        (SHOULDERS, "Shoulders"),
+        (ARMS, "Arms"),
+        (BC, "Back-Chest"),
+        (SA, "Shoulders-Arms"),
+        (REST, "Rest"),
     ]
 
     name = models.CharField(max_length=20)  # usually the same as focus, but there might be variation
