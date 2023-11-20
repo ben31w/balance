@@ -64,7 +64,7 @@ class Day(models.Model):
     routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f"{self.name} | {self.time_est_min} | {self.routine}"
+        return f"{self.name} ({self.time_est_min} min.)"
 
 
 class PlannedSets(models.Model):

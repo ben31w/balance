@@ -7,4 +7,16 @@ Eventually this page will list all the workouts the user has created
 
 {% block subcontent %}
     <h1>Workout Designer</h1>
+    <h2>My Routines</h2>
+
+    <ul>
+        {% for key, value in routine_dict.items %}
+            <li>{{ key }}</li>
+            {% for day in value %}
+                <ul>
+                    <li>{{ day }}</li>
+                </ul>
+            {% endfor %} 
+        {% endfor %}
+    </ul>
 {% endblock subcontent %}

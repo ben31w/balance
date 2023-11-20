@@ -2,7 +2,7 @@ import datetime
 from random import randrange
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from workout_designer.models import Routine, Day
 
@@ -10,7 +10,15 @@ from workout_designer.models import Routine, Day
 @login_required
 def index(request):
     """Load the My Workouts page"""
-    return render(request, "workout_designer/index.html")
+    routines = Routine.objects.filter(user=request.user)
+    routine_dict = dict()
+    for routine in routines:
+        routine_dict[f"{routine}"] = []
+        days = Day.objects.filter(routine=routine)
+        for day in days:
+            routine_dict[f"{routine}"].append(day)
+    context = {'routines': routines, 'routine_dict': routine_dict}
+    return render(request, "workout_designer/index.html", context)
 
 
 @login_required
@@ -30,9 +38,9 @@ def create_workout(request):
         split = request.POST.get("split")
 
         create_routine(request, schedule, upper_limit, lower_limit, split, goal)
+        return redirect('workout_designer:index')
     else:
         return render(request, 'workout_designer/create_workout.html')
-    return render(request, 'workout_designer/create_workout.html')
 
 
 @login_required
