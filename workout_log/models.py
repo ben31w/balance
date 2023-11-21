@@ -14,19 +14,20 @@ class Exercise(models.Model):
     An exercise that the user can log.
     Fields:
     - name
-    - isCompound
+    - is_compound
     - equipment
-    - createdBy
+    - created_by
     Exercises can have the same name but different equipments, making
     them different exercises. There is a constraint to check this rule.
     Ex: bench press (barbell), bench press (dumbbells)
     """
     name = models.CharField(max_length=40)
-    isCompound = models.BooleanField()
+    is_compound = models.BooleanField()
     BARBELL = "BB"
     DUMBBELLS = "DB"
-    CABLES = "CB"
-    MACHINE = "MC"
+    CABLES = "C"
+    MACHINE = "M"
+    SMITH_MACHINE = "SM"
     HEXBAR = "HB"
     KETTLEBELL = "KB"
     RESISTANCE_BAND = "RB"
@@ -36,6 +37,7 @@ class Exercise(models.Model):
         (DUMBBELLS, "Dumbbells"),
         (CABLES, "Cables"),
         (MACHINE, "Machine"),
+        (SMITH_MACHINE, "Smith Machine"),
         (HEXBAR, "Hexbar"),
         (KETTLEBELL, "Kettlebell"),
         (RESISTANCE_BAND, "Resistance Band"),
@@ -69,13 +71,13 @@ class MuscleWorked(models.Model):
     """
     exercise = models.ForeignKey(Exercise, on_delete=models.RESTRICT)
     muscle = models.ForeignKey(Muscle, on_delete=models.RESTRICT)
-    directlyTargets = models.BooleanField()
+    directly_targets = models.BooleanField()
 
     class Meta:
         verbose_name_plural = 'muscles worked'
 
     def __str__(self):
-        if self.directlyTargets:
+        if self.directly_targets:
             return f"{self.exercise}, {self.muscle}, Direct"
         return f"{self.exercise}, {self.muscle}, Indirect"
 
