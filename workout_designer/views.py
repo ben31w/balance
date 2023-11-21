@@ -4,7 +4,9 @@ from random import randrange
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from workout_designer.models import Routine, Day
+from workout_designer.models import Routine, DayType, Day, PlannedSets
+import workout_log.constants as constants
+from workout_log.models import Muscle
 
 
 @login_required
@@ -92,75 +94,83 @@ def create_days_arnold(routine):
     # is it worth storing rest days? probably not!
     # i'm just banking on these days being created and stored in order.
     if routine.is_synchronous:
-        create_day(routine, "Legs M", Day.LEGS)
-        create_day(routine, "Back-Chest Tu", Day.BC)
-        create_day(routine, "Shoulders-Arms W", Day.SA)
-        create_day(routine, "Legs Th", Day.LEGS)
-        create_day(routine, "Back-Chest F", Day.BC)
-        create_day(routine, "Shoulders-Arms Sa", Day.SA)
-        create_day(routine, "Rest Su", Day.REST)
+        create_day(routine, "Legs M", DayType.LEGS)
+        create_day(routine, "Back-Chest Tu", DayType.BC)
+        create_day(routine, "Shoulders-Arms W", DayType.SA)
+        create_day(routine, "Legs Th", DayType.LEGS)
+        create_day(routine, "Back-Chest F", DayType.BC)
+        create_day(routine, "Shoulders-Arms Sa", DayType.SA)
+        create_day(routine, "Rest Su", DayType.REST)
     else:
-        create_day(routine, "Legs A", Day.LEGS)
-        create_day(routine, "Back-Chest A", Day.BC)
-        create_day(routine, "Shoulders-Arms A", Day.SA)
-        create_day(routine, "Rest", Day.REST)
-        create_day(routine, "Legs B", Day.LEGS)
-        create_day(routine, "Back-Chest B", Day.BC)
-        create_day(routine, "Shoulders-Arms B", Day.SA)
-        create_day(routine, "Rest", Day.REST)
+        create_day(routine, "Legs A", DayType.LEGS)
+        create_day(routine, "Back-Chest A", DayType.BC)
+        create_day(routine, "Shoulders-Arms A", DayType.SA)
+        create_day(routine, "Rest", DayType.REST)
+        create_day(routine, "Legs B", DayType.LEGS)
+        create_day(routine, "Back-Chest B", DayType.BC)
+        create_day(routine, "Shoulders-Arms B", DayType.SA)
+        create_day(routine, "Rest", DayType.REST)
 
 
 def create_days_bro(routine):
     """Create days for a Bro split"""
-    create_day(routine, "Chest", Day.CHEST)
-    create_day(routine, "Back", Day.BACK)
-    create_day(routine, "Legs", Day.LEGS)
-    create_day(routine, "Shoulders", Day.SHOULDERS)
-    create_day(routine, "Arms", Day.ARMS)
-    create_day(routine, "Rest", Day.REST)
-    create_day(routine, "Rest", Day.REST)
+    create_day(routine, "Chest", DayType.CHEST)
+    create_day(routine, "Back", DayType.BACK)
+    create_day(routine, "Legs", DayType.LEGS)
+    create_day(routine, "Shoulders", DayType.SHOULDERS)
+    create_day(routine, "Arms", DayType.ARMS)
+    create_day(routine, "Rest", DayType.REST)
+    create_day(routine, "Rest", DayType.REST)
 
 
 def create_days_ppl(routine):
     """Create days for a PPL split"""
     if routine.is_synchronous:
-        create_day(routine, "Legs M", Day.LEGS)
-        create_day(routine, "Push Tu", Day.PUSH)
-        create_day(routine, "Pull W", Day.PULL)
-        create_day(routine, "Legs Th", Day.LEGS)
-        create_day(routine, "Push F", Day.PUSH)
-        create_day(routine, "Pull Sa", Day.PULL)
-        create_day(routine, "Rest Su", Day.REST)
+        create_day(routine, "Legs M", DayType.LEGS)
+        create_day(routine, "Push Tu", DayType.PUSH)
+        create_day(routine, "Pull W", DayType.PULL)
+        create_day(routine, "Legs Th", DayType.LEGS)
+        create_day(routine, "Push F", DayType.PUSH)
+        create_day(routine, "Pull Sa", DayType.PULL)
+        create_day(routine, "Rest Su", DayType.REST)
     else:
-        create_day(routine, "Legs A", Day.LEGS)
-        create_day(routine, "Push A", Day.PUSH)
-        create_day(routine, "Pull A", Day.PULL)
-        create_day(routine, "Rest", Day.REST)
-        create_day(routine, "Legs B", Day.LEGS)
-        create_day(routine, "Push B", Day.PUSH)
-        create_day(routine, "Pull B", Day.PULL)
-        create_day(routine, "Rest", Day.REST)
+        create_day(routine, "Legs A", DayType.LEGS)
+        create_day(routine, "Push A", DayType.PUSH)
+        create_day(routine, "Pull A", DayType.PULL)
+        create_day(routine, "Rest", DayType.REST)
+        create_day(routine, "Legs B", DayType.LEGS)
+        create_day(routine, "Push B", DayType.PUSH)
+        create_day(routine, "Pull B", DayType.PULL)
+        create_day(routine, "Rest", DayType.REST)
 
 
 def create_days_ul(routine):
     """Create days for a UL split"""
-    create_day(routine, "Upper", Day.UPPER)
-    create_day(routine, "Lower", Day.LOWER)
-    create_day(routine, "Rest", Day.REST)
-    create_day(routine, "Upper", Day.UPPER)
-    create_day(routine, "Lower", Day.LOWER)
-    create_day(routine, "Rest", Day.REST)
-    create_day(routine, "Rest", Day.REST)
+    create_day(routine, "Upper", DayType.UPPER)
+    create_day(routine, "Lower", DayType.LOWER)
+    create_day(routine, "Rest", DayType.REST)
+    create_day(routine, "Upper", DayType.UPPER)
+    create_day(routine, "Lower", DayType.LOWER)
+    create_day(routine, "Rest", DayType.REST)
+    create_day(routine, "Rest", DayType.REST)
 
 
-def create_day(routine, name, focus):
-    """Create a Day for this Routine, given a name and focus"""
+def create_day(routine, name, day_type):
+    """Create a Day for this Routine, given a name and type"""
     d = Day()
     d.routine = routine
     d.name = name
-    d.focus = focus
+    d.day_type = DayType.objects.get(name=day_type)
     d.time_est_min = 0
     d.save()
+
+
+def create_sets_for_day(routine, day):
+    """Create sets for this day and routine"""
+    # TODO
+    while day.time_est_min < routine.upper_limit:
+        muscles = Muscle.objects.all()
+        muscles.get(name=constants.ABS)
 
 
 def get_limits(lower_hr_str, lower_min_str, upper_hr_str, upper_min_str):
