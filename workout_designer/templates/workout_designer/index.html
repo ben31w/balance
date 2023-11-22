@@ -10,11 +10,17 @@ Eventually this page will list all the workouts the user has created
     <h2>My Routines</h2>
 
     <ul>
-        {% for key, value in routine_dict.items %}
-            <li>{{ key }}</li>
-            {% for day in value %}
+        {% for routine, days in routine_dict.items %}
+            <li>{{ routine }}</li>
+            {% for day, planned_sets in days.items %}
                 <ul>
                     <li>{{ day }}</li>
+                    {% for instance in planned_sets %}
+                        <ul>
+                            <li>{{ instance }}</li>
+                        </ul>
+                    {% empty %}
+                    {% endfor %}
                 </ul>
             {% endfor %} 
         {% endfor %}

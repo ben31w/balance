@@ -12,13 +12,27 @@ from workout_log.models import MuscleWorked
 def index(request):
     """Load the My Workouts page"""
     routines = Routine.objects.filter(user=request.user)
+
+    # Create routine dictionary with this structure:
+    # {
+    #    'routine 1': {
+    #                     'day 1': [planned sets for exercise 1, planned sets for exercise 2, ...],
+    #                     'day 2': [planned sets for exercise 1, planned sets for exercise 2, ...],
+    #                     ...
+    #                 },
+    #    ...
+    # }
     routine_dict = dict()
     for routine in routines:
-        routine_dict[f"{routine}"] = []
+        routine_dict[f"{routine}"] = dict()
         days = Day.objects.filter(routine=routine)
         for day in days:
-            routine_dict[f"{routine}"].append(day)
-    context = {'routines': routines, 'routine_dict': routine_dict}
+            routine_dict[f"{routine}"][f"{day}"] = []
+            planned_sets = PlannedSets.objects.filter(day=day)
+            for ps in planned_sets:
+                routine_dict[f"{routine}"][f"{day}"].append(ps)
+    print(routine_dict)
+    context = {'routine_dict': routine_dict}
     return render(request, "workout_designer/index.html", context)
 
 
