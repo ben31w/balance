@@ -44,7 +44,7 @@ class Exercise(models.Model):
         (BODYWEIGHT, "Bodyweight"),
     ]
     equipment = models.CharField(max_length=2, choices=EQUIPMENT_CHOICES)
-    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         unique_together = ["name", "equipment"]
