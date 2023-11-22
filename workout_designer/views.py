@@ -4,9 +4,8 @@ from random import randrange
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from workout_designer.models import Routine, DayType, Day, PlannedSets
-import workout_log.constants as constants
-from workout_log.models import Muscle
+from workout_designer.models import Focus, Routine, DayType, Day, PlannedSets
+from workout_log.models import MuscleWorked
 
 
 @login_required
@@ -163,14 +162,47 @@ def create_day(routine, name, day_type):
     d.day_type = DayType.objects.get(name=day_type)
     d.time_est_min = 0
     d.save()
+    create_sets_for_day(d)
 
 
-def create_sets_for_day(routine, day):
-    """Create sets for this day and routine"""
-    # TODO
-    while day.time_est_min < routine.upper_limit:
-        muscles = Muscle.objects.all()
-        muscles.get(name=constants.ABS)
+def create_sets_for_day(day):
+    """Create sets for this day"""
+    if day.day_type == DayType.objects.get(name=DayType.REST):
+        return
+
+    # TODO actually create multiple planned sets for the day. This is just making one for now.
+    ps = PlannedSets()
+    ps.day = day
+
+    # Get muscles that this day works
+    print(f"Day: {day}")
+    focii = Focus.objects.filter(day_type=day.day_type)
+    muscles = [focus.muscle for focus in focii]
+    print(f"focii: {focii}")
+    print(f"muscles: {muscles}")
+
+    # Get an exercise that targets the first muscle
+    m1 = muscles[0]
+    muscles_worked = MuscleWorked.objects.filter(muscle=m1).filter(directly_targets=True)
+    exercises = [mw.exercise for mw in muscles_worked]
+    ps.exercise = exercises[randrange(len(exercises))]
+    
+    # Assume 3 sets for now.
+    ps.num_sets = 3
+
+    # Get random reps between 6 and 12, even-numbers
+    ps.reps = randrange(6, 13, 2)
+
+    # Get very rough time estimate using these rules:
+    #  Compound lifts require a 2 minute warmup, and take 3.5 minutes per set.
+    #  Isolation lifts require no warmup and take 2.5 minutes per set.
+    #  Might want to change this calculation later to reflect reps
+    if ps.exercise.is_compound:
+        ps.time_est_min = 2 + ps.num_sets * 3.5
+    else:
+        ps.time_est_min = ps.num_sets * 2.5
+    
+    ps.save()
 
 
 def get_limits(lower_hr_str, lower_min_str, upper_hr_str, upper_min_str):
