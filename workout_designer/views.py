@@ -65,11 +65,13 @@ def create_routine(request, schedule, upper_limit, lower_limit, split, goal):
         rand = randrange(len(choices))
         r.split = choices[rand]
     else:
-        r.split = split
+        for abreviation, full_name in Routine.SPLIT_CHOICES:
+            if split == full_name:
+               r.split = abreviation
     r.name = r.split
     r.lower_limit_min = lower_limit
     r.upper_limit_min = upper_limit
-    r.is_muscle_focused = goal == "musc"
+    r.is_muscle_focused = goal == "muscle"
     r.save()
     create_days_for_routine(r)
 
@@ -78,13 +80,13 @@ def create_routine(request, schedule, upper_limit, lower_limit, split, goal):
 def create_days_for_routine(routine):
     """Create Days for a Routine"""
     match routine.split:
-        case 'Arnold':
+        case Routine.ARN:
             create_days_arnold(routine)
-        case 'Bro':
+        case Routine.BRO:
             create_days_bro(routine)
-        case 'PPL':
+        case Routine.PPL:
             create_days_ppl(routine)
-        case 'UL':
+        case Routine.UL:
             create_days_ul(routine)
 
 
