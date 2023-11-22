@@ -65,9 +65,7 @@ def create_routine(request, schedule, upper_limit, lower_limit, split, goal):
         rand = randrange(len(choices))
         r.split = choices[rand]
     else:
-        for abreviation, full_name in Routine.SPLIT_CHOICES:
-            if split == full_name:
-               r.split = abreviation
+        r.split = split
     r.name = r.split
     r.lower_limit_min = lower_limit
     r.upper_limit_min = upper_limit
