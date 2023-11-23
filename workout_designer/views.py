@@ -22,6 +22,7 @@ def index(request):
     #                 },
     #    ...
     # }
+    # TODO this isn't updating for days that have the same name.
     routine_dict = dict()
     for routine in routines:
         routine_dict[f"{routine}"] = dict()
@@ -31,7 +32,6 @@ def index(request):
             planned_sets = PlannedSets.objects.filter(day=day)
             for ps in planned_sets:
                 routine_dict[f"{routine}"][f"{day}"].append(ps)
-    print(routine_dict)
     context = {'routine_dict': routine_dict}
     return render(request, "workout_designer/index.html", context)
 
@@ -176,47 +176,51 @@ def create_day(routine, name, day_type):
     d.day_type = DayType.objects.get(name=day_type)
     d.time_est_min = 0
     d.save()
-    create_sets_for_day(d)
+    create_sets_for_day(routine, d)
 
 
-def create_sets_for_day(day):
+def create_sets_for_day(routine, day):
     """Create sets for this day"""
     if day.day_type == DayType.objects.get(name=DayType.REST):
         return
-
-    # TODO actually create multiple planned sets for the day. This is just making one for now.
-    ps = PlannedSets()
-    ps.day = day
-
+    
     # Get muscles that this day works
-    print(f"Day: {day}")
     focii = Focus.objects.filter(day_type=day.day_type)
     muscles = [focus.muscle for focus in focii]
-    print(f"focii: {focii}")
-    print(f"muscles: {muscles}")
 
-    # Get an exercise that targets the first muscle
-    m1 = muscles[0]
-    muscles_worked = MuscleWorked.objects.filter(muscle=m1).filter(directly_targets=True)
-    exercises = [mw.exercise for mw in muscles_worked]
-    ps.exercise = exercises[randrange(len(exercises))]
+    # Keep addings sets as long as we're in the time limits
+    curr_time_est = day.time_est_min
+    while curr_time_est < routine.lower_limit_min:
+        for muscle in muscles:
+            ps = PlannedSets()
+            
+            ps.day = day
+
+            # get random exercise that targets this muscle
+            muscles_worked = MuscleWorked.objects.filter(muscle=muscle).filter(directly_targets=True)
+            exercises = [mw.exercise for mw in muscles_worked]
+            ps.exercise = exercises[randrange(len(exercises))]
     
-    # Assume 3 sets for now.
-    ps.num_sets = 3
+            # Assume 3 sets for now.
+            ps.num_sets = 3
 
-    # Get random reps between 6 and 12, even-numbers
-    ps.reps = randrange(6, 13, 2)
+            # Get random reps between 6 and 12, even-numbers
+            ps.reps = randrange(6, 13, 2)
 
-    # Get very rough time estimate using these rules:
-    #  Compound lifts require a 2 minute warmup, and take 3.5 minutes per set.
-    #  Isolation lifts require no warmup and take 2.5 minutes per set.
-    #  Might want to change this calculation later to reflect reps
-    if ps.exercise.is_compound:
-        ps.time_est_min = 2 + ps.num_sets * 3.5
-    else:
-        ps.time_est_min = ps.num_sets * 2.5
-    
-    ps.save()
+            # Get very rough time estimate using these rules:
+            #  Compound lifts require a 2 minute warmup, and take 3.5 minutes per set.
+            #  Isolation lifts require no warmup and take 2.5 minutes per set.
+            #  Might want to change this calculation later to reflect reps
+            if ps.exercise.is_compound:
+                ps.time_est_min = 2 + ps.num_sets * 3.5
+            else:
+                ps.time_est_min = ps.num_sets * 2.5
+            curr_time_est += ps.time_est_min
+            ps.save()
+            if curr_time_est > routine.lower_limit_min:
+                break
+    day.time_est_min = curr_time_est
+    day.save()
 
 
 def get_limits(lower_hr_str, lower_min_str, upper_hr_str, upper_min_str):
