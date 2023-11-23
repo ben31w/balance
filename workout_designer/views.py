@@ -1,5 +1,5 @@
 import datetime
-from random import randrange
+from random import randrange, shuffle
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -187,11 +187,14 @@ def create_sets_for_day(routine, day):
     if day.day_type == DayType.objects.get(name=DayType.REST):
         return
     
-    # Get muscles that this day works
+    # Get muscles that this day works. 
+    # Shuffle so it's not hitting the same muscles in the same order every time.
     focii = Focus.objects.filter(day_type=day.day_type)
     muscles = [focus.muscle for focus in focii]
+    shuffle(muscles)
 
     # Keep addings sets as long as we're in the time limits
+    #  TODO currently not doing anything with upper_limit_min or is_muscle_focused
     curr_time_est = day.time_est_min
     while curr_time_est < routine.lower_limit_min:
         for muscle in muscles:
@@ -220,6 +223,8 @@ def create_sets_for_day(routine, day):
                 ps.time_est_min = ps.num_sets * 2.5
             curr_time_est += ps.time_est_min
             ps.save()
+
+            # need to break out of for loop so the while loop can break
             if curr_time_est > routine.lower_limit_min:
                 break
     day.time_est_min = curr_time_est
