@@ -22,16 +22,19 @@ def index(request):
     #                 },
     #    ...
     # }
-    # TODO this isn't updating for days that have the same name.
     routine_dict = dict()
     for routine in routines:
         routine_dict[f"{routine}"] = dict()
         days = Day.objects.filter(routine=routine)
         for day in days:
-            routine_dict[f"{routine}"][f"{day}"] = []
+            # need to account for two days with the same name (ex: two lower days)
+            if day.__str__() in routine_dict[f"{routine}"].keys():
+                curr_day_ls = routine_dict[f"{routine}"][f"{day} 2"] = []
+            else:
+                curr_day_ls = routine_dict[f"{routine}"][f"{day}"] = []
             planned_sets = PlannedSets.objects.filter(day=day)
             for ps in planned_sets:
-                routine_dict[f"{routine}"][f"{day}"].append(ps)
+                curr_day_ls.append(ps)
     context = {'routine_dict': routine_dict}
     return render(request, "workout_designer/index.html", context)
 
