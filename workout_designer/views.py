@@ -1,6 +1,7 @@
 import datetime
 from random import randrange, shuffle
 
+from dateutil import tz
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from commons.views import verify_user_is_owner
@@ -12,7 +13,7 @@ from workout_log.models import MuscleWorked
 @login_required
 def index(request):
     """Load the My Workouts page"""
-    routines = Routine.objects.filter(user=request.user)
+    routines = Routine.objects.filter(user=request.user).order_by("datetime_created")
 
     # Create routine dictionary with this structure:
     # {
@@ -52,7 +53,8 @@ def routine(request, routine_id):
         planned_sets = PlannedSets.objects.filter(day=day)
         for ps in planned_sets:
             curr_day_ls.append(ps)
-    context = {'routine_dict': routine_dict}
+    
+    context = {'routine': routine,'routine_dict': routine_dict}
     return render(request, 'workout_designer/routine.html', context)
 
 
@@ -90,7 +92,7 @@ def create_routine(request, schedule, upper_limit, lower_limit, split, goal):
     - goal: musc or fit
     """
     r = Routine()
-    r.date_created = datetime.date.today()
+    r.datetime_created = datetime.datetime.now().replace(tzinfo=tz.gettz())
     r.user = request.user
     r.is_synchronous = schedule == "sync"
     if split == 'Anything':
@@ -99,7 +101,6 @@ def create_routine(request, schedule, upper_limit, lower_limit, split, goal):
         r.split = choices[rand]
     else:
         r.split = split
-    r.name = r.split
     r.lower_limit_min = lower_limit
     r.upper_limit_min = upper_limit
     r.is_muscle_focused = goal == "muscle"

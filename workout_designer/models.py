@@ -20,8 +20,7 @@ class Routine(models.Model):
         (UL, "Upper-Lower"),
     ]
 
-    name = models.CharField(max_length=40)
-    date_created = models.DateField()
+    datetime_created = models.DateTimeField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     split = models.CharField(max_length=3, choices=SPLIT_CHOICES)
     is_synchronous = models.BooleanField()
@@ -30,7 +29,22 @@ class Routine(models.Model):
     is_muscle_focused = models.BooleanField()
 
     def __str__(self) -> str:
-        return f"{self.id}: {self.name}"
+        name = ""
+        match self.split:
+            case Routine.ARN:
+                name += "Arnold"
+            case Routine.BRO:
+                name += "Bro"
+            case Routine.PPL:
+                name += "Push-Pull-Legs"
+            case Routine.UL:
+                name += "Upper-Lower"
+        match self.is_synchronous:
+            case True:
+                name += ", Synchronous"
+            case False:
+                name += ", Asynchronous" 
+        return name
 
 
 class DayType(models.Model):

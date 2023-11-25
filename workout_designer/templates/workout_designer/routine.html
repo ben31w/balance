@@ -6,7 +6,12 @@ Page for viewing a particular routine in the Workout Designer app
 
 {% block subcontent %}
     <h1>Workout Designer</h1>
-    <h2>Routine</h2>
+    <h2>{{ routine }}</h2>
+    <p>
+        Upper limit: {{routine.upper_limit_min}} min.<br>
+        Lower limit: {{routine.lower_limit_min}} min.<br>
+        Created on: {{routine.datetime_created}}
+    </p>
 
     <ul>
         {% for day_name, list_of_sets in routine_dict.items %}
