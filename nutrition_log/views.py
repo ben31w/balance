@@ -143,6 +143,19 @@ def edit_logged_food_item(request, lfi_id):
 
 
 @login_required
+def delete_logged_food_item(request, lfi_id):
+    """Delete this logged food item"""
+    lfi = LoggedFoodItem.objects.get(id=lfi_id)
+    owner = lfi.user
+    verify_user_is_owner(owner, request.user)
+    lfi.delete()
+    date = lfi.date
+    dateStr = date.strftime('%Y-%m-%d')
+    url = reverse('nutrition_log:daily') + f"?selectedDate={dateStr}"
+    return redirect(url)
+
+
+@login_required
 def set_weight(request):
     """Load a page where user can enter their daily weight"""
     if request.method == "POST":
