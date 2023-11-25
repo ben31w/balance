@@ -48,21 +48,3 @@
     <table id="snacks"></table>
     <a>Add item</a>
 {% endblock subcontent %}
-
-{% block scripts %}
-    <script>
-        // WHEN THE SCRIPT LOADS
-        // ---------------------
-        // initialize date label's text 
-        let dateDisplay = document.getElementById("currentDate");
-        let today = new Date();
-        today.setHours(0, 0, 0, 0);  // need to remove time part. consider using a library for this.
-        dateDisplay.innerHTML = today.toDateString();
-
-        // TODO and logged food items
-        let breakfast = document.getElementById("breakfast");
-        let lunch = document.getElementById("lunch");
-        let dinner = document.getElementById("dinner");
-        let snacks = document.getElementById("snacks");
-    </script>
-{% endblock scripts %}
