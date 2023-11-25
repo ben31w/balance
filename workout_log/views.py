@@ -3,6 +3,7 @@ Views for the Workout Log app.
 """
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.urls import reverse
 import plotly.graph_objects as go
 
 from commons.views import get_selected_date, verify_user_is_owner
@@ -125,7 +126,13 @@ def edit_set(request, set_id):
         form = SetForm(instance=set, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('workout_log:index')
+
+            # Redirect back to the selected date
+            date = form.cleaned_data['date']
+            dateStr = date.strftime('%Y-%m-%d')
+            url = reverse('workout_log:index') + f"?selectedDate={dateStr}"
+            return redirect(url)
+            # return redirect('workout_log:index')
     else:
         form = SetForm(instance=set)
     context = {'form': form, 'set': set}
