@@ -5,6 +5,16 @@ Views are accessed by multiple apps or not central to a particular app.
 import datetime
 from django.http import Http404
 from django.shortcuts import render
+from django.urls import reverse
+
+
+def get_date_url(destination_url, date):
+    """
+    Given a URL and a date object to send to the URL, return the URL with
+    the date as a parameter.
+    """
+    dateStr = date.strftime('%Y-%m-%d')
+    return reverse(destination_url) + f"?selectedDate={dateStr}"
 
 
 def get_selected_date(request):

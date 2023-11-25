@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 import plotly.graph_objects as go
 
-from commons.views import get_selected_date, verify_user_is_owner
+from commons.views import get_date_url, get_selected_date, verify_user_is_owner
 from .forms import SetForm, VolumeManagerForm
 from .models import Exercise, Muscle, MuscleWorked, Set
 
@@ -113,9 +113,7 @@ def delete_set(request, set_id):
     verify_user_is_owner(owner, request.user)
     set.delete()
 
-    date = set.date
-    dateStr = date.strftime('%Y-%m-%d')
-    url = reverse('workout_log:index') + f"?selectedDate={dateStr}"
+    url = get_date_url('workout_log:index', set.date)
     return redirect(url)
 
 
@@ -130,11 +128,7 @@ def edit_set(request, set_id):
         form = SetForm(instance=set, data=request.POST)
         if form.is_valid():
             form.save()
-
-            # Redirect back to the selected date
-            date = form.cleaned_data['date']
-            dateStr = date.strftime('%Y-%m-%d')
-            url = reverse('workout_log:index') + f"?selectedDate={dateStr}"
+            url = get_date_url('workout_log:index', form.cleaned_data['date'])
             return redirect(url)
     else:
         form = SetForm(instance=set)

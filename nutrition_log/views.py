@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 import plotly.express as px
 
-from commons.views import get_selected_date, verify_user_is_owner
+from commons.views import get_date_url, get_selected_date, verify_user_is_owner
 from .forms import DailyWeightForm, LogFoodItemForm, TargetCaloriesForm
 from .models import DailyWeight, LoggedFoodItem, Unit
 
@@ -112,11 +112,7 @@ def log_food_item(request):
         logged_food_item.meal = 1
         logged_food_item.user = request.user
         logged_food_item.save()
-        
-        # Redirect back to the selected date
-        date = form.cleaned_data['date']
-        dateStr = date.strftime('%Y-%m-%d')
-        url = reverse('nutrition_log:daily') + f"?selectedDate={dateStr}"
+        url = get_date_url('nutrition_log:daily', form.cleaned_data['date'])
         return redirect(url)
     else:
         form = LogFoodItemForm()
@@ -135,11 +131,7 @@ def edit_logged_food_item(request, lfi_id):
         form = LogFoodItemForm(instance=lfi, data=request.POST)
         if form.is_valid():
             form.save()
-
-            # Redirect back to the selected date
-            date = form.cleaned_data['date']
-            dateStr = date.strftime('%Y-%m-%d')
-            url = reverse('nutrition_log:daily') + f"?selectedDate={dateStr}"
+            url = get_date_url('nutrition_log:daily', form.cleaned_data['date'])
             return redirect(url)
     else:
         form = LogFoodItemForm(instance=lfi)
@@ -154,9 +146,7 @@ def delete_logged_food_item(request, lfi_id):
     owner = lfi.user
     verify_user_is_owner(owner, request.user)
     lfi.delete()
-    date = lfi.date
-    dateStr = date.strftime('%Y-%m-%d')
-    url = reverse('nutrition_log:daily') + f"?selectedDate={dateStr}"
+    url = get_date_url('nutrition_log:daily', lfi.date)
     return redirect(url)
 
 
@@ -188,7 +178,8 @@ def set_weight(request):
                 new_weight.user = request.user
                 new_weight.save()
             finally:
-                return redirect("nutrition_log:daily")
+                url = get_date_url('nutrition_log:daily', form.cleaned_data['date'])
+                return redirect(url)
     else:
         form = DailyWeightForm()
     context = {"form": form}
