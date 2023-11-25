@@ -30,21 +30,8 @@
         <li>
             {{ lfi }}
         </li>
-        {% empty %}
-        <p>You haven't logged anything for {{ date }}.</p>
         {% endfor %}
     </ul>
 
-    <h4>Breakfast</h4>
-    <table id="breakfast"></table>
-    <a href="{% url 'nutrition_log:log_food_item' %}">Add item</a>
-    <h4>Lunch</h4>
-    <table id="lunch"></table>
-    <a>Add item</a>
-    <h4>Dinner</h4>
-    <table id="dinner"></table>
-    <a>Add item</a>
-    <h4>Snacks</h4>
-    <table id="snacks"></table>
-    <a>Add item</a>
+    <a href="{% url 'nutrition_log:log_food_item' %}">Log food item</a>
 {% endblock subcontent %}

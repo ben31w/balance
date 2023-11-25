@@ -104,6 +104,8 @@ def log_food_item(request):
     if request.method == "POST":
         form = LogFoodItemForm(data=request.POST)
         logged_food_item = form.save(commit=False)
+         # for now, we'll set meal=1 (breakfast) and won't worry about lunch, dinner, and snacks.
+        logged_food_item.meal = 1
         logged_food_item.user = request.user
         logged_food_item.save()
         return redirect("nutrition_log:daily")
