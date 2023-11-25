@@ -87,12 +87,15 @@ def daily(request):
     """Load the daily page for the Nutrition Log"""
     date = get_selected_date(request)
     daily_wt = get_daily_weight(request, date)
-    strings, calories, protein = get_logged_food_items_stats(request, date)
+    lfis, lfi_strings, calories, protein = get_logged_food_items_stats(request, date)
+
+    # ZIP so both items can be access in the same loop in the template
+    lfi_info = zip(lfis, lfi_strings)
 
     context = {
         "date": date,
         "daily_weight": daily_wt,
-        "logged_food_items": strings,  # TODO need to pass actual objects not strings.
+        "logged_food_items": lfi_info,
         "total_calories": calories,
         "total_protein": protein,
     }
@@ -187,7 +190,8 @@ def get_daily_weight(request, date):
 def get_logged_food_items_stats(request, date):
     """
     Search through the user's logged food items for this date.
-    Return three things:
+    Return four things:
+        - list of logged food item objects
         - list of logged food item strings that can be rendered in HTML later.
         - total calories
         - total protein
@@ -207,12 +211,12 @@ def get_logged_food_items_stats(request, date):
         protein = quantity * unit.proPerUnit
         protein_list.append(protein)
 
-        lfi_str = f"{logged_food_item.food_item.name}, {quantity}x{unit.name}  |  {calories} Calories | {protein}g Protein"
+        lfi_str = f"{logged_food_item} | {calories} Calories | {protein}g Protein"
         strings.append(lfi_str)
     total_calories = sum(calories_list)
     total_protein = sum(protein_list)
 
-    return strings, total_calories, total_protein
+    return logged_food_items, strings, total_calories, total_protein
 
 
 @login_required
@@ -277,7 +281,7 @@ def get_list_of_calories(request, dates):
     """Get a list of the user's calories for these dates"""
     calories_list = []
     for date in dates:
-        _, daily_calories, _ = get_logged_food_items_stats(request, date)
+        _,_, daily_calories, _ = get_logged_food_items_stats(request, date)
         calories_list.append(daily_calories)
     return calories_list
 
@@ -331,7 +335,7 @@ def create_calories_chart(request):
     # Get calories for each date
     calories_list = []
     for date in dates:
-        _, calories, _ = get_logged_food_items_stats(request, date=date)
+        _,_, calories, _ = get_logged_food_items_stats(request, date=date)
         calories_list.append(calories)
 
     # Create and render chart

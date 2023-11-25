@@ -26,10 +26,10 @@
     <p><span id="totalCaloriesLabel">{{ total_calories }}</span> Calories</p>
     <p><span id="totalProteinLabel">{{ total_protein }}</span>g Protein</p>
     <ul>
-        {% for lfi in logged_food_items %}
+        {% for lfi, lfi_string in logged_food_items %}
         <li>
-            {{ lfi }}
-            <a href="{% url 'nutrition_log:edit_logged_food_item' 15 %}">edit</a>
+            {{ lfi_string }} | 
+            <a href="{% url 'nutrition_log:edit_logged_food_item' lfi.id %}">edit</a>
         </li>
         {% endfor %}
     </ul>

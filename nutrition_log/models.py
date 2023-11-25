@@ -26,7 +26,11 @@ class FoodItem(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
-        if self.producer is None or self.producer == "":
+        if (self.user is None or self.user == "") and (self.producer is None or self.producer == ""):
+            return f"{self.name}"
+        elif self.user is None or self.user == "":
+            return f"{self.name}, {self.producer}"
+        elif self.producer is None or self.producer == "":
             return f"{self.name} , {self.user}"
         return f"{self.name}, {self.producer} , {self.user}"
 
@@ -76,7 +80,7 @@ class LoggedFoodItem(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f"{self.user.username} | {self.date} | {self.food_item} | {self.quantity} | {self.unit.name} | {self.meal}"
+        return f"{self.food_item.name} | {self.quantity}x{self.unit.name}"
 
 
 class Goals(models.Model):
