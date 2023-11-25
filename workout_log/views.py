@@ -1,13 +1,11 @@
 """
 Views for the Workout Log app.
 """
-import datetime
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.shortcuts import render, redirect
 import plotly.graph_objects as go
 
-from commons.views import verify_user_is_owner
+from commons.views import get_selected_date, verify_user_is_owner
 from .forms import SetForm, VolumeManagerForm
 from .models import Exercise, Muscle, MuscleWorked, Set
 
@@ -132,19 +130,6 @@ def edit_set(request, set_id):
         form = SetForm(instance=set)
     context = {'form': form, 'set': set}
     return render(request, 'workout_log/edit_set.html', context)
-
-
-def get_selected_date(request):
-    """
-    Get the date that the user submitted in the dateInput on the daily page.
-    Or load today's date by default.
-    """
-    # TODO GET.get formats date as  YYYY-mm-dd
-    # today() formats date as       Month. dd, YYYY
-    selected_date = request.GET.get("selectedDate")
-    if not selected_date:
-        selected_date = datetime.date.today()
-    return selected_date
 
 
 @login_required

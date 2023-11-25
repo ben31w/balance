@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 import plotly.express as px
 
+from commons.views import get_selected_date
 from .forms import DailyWeightForm, LogFoodItemForm, TargetCaloriesForm
 from .models import DailyWeight, LoggedFoodItem, Unit
 
@@ -186,19 +187,6 @@ def get_logged_food_items_stats(request, date):
     total_protein = sum(protein_list)
 
     return strings, total_calories, total_protein
-
-
-def get_selected_date(request):
-    """
-    Get the date that the user submitted in the dateInput on the daily page.
-    Or load today's date by default.
-    """
-    # TODO GET.get formats date as  YYYY-mm-dd
-    # today() formats date as       Month. dd, YYYY
-    selected_date = request.GET.get("selectedDate")
-    if not selected_date:
-        selected_date = datetime.date.today()
-    return selected_date
 
 
 @login_required
