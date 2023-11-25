@@ -112,7 +112,11 @@ def delete_set(request, set_id):
     owner = set.logged_by
     verify_user_is_owner(owner, request.user)
     set.delete()
-    return redirect('workout_log:index')
+
+    date = set.date
+    dateStr = date.strftime('%Y-%m-%d')
+    url = reverse('workout_log:index') + f"?selectedDate={dateStr}"
+    return redirect(url)
 
 
 @login_required()
@@ -132,7 +136,6 @@ def edit_set(request, set_id):
             dateStr = date.strftime('%Y-%m-%d')
             url = reverse('workout_log:index') + f"?selectedDate={dateStr}"
             return redirect(url)
-            # return redirect('workout_log:index')
     else:
         form = SetForm(instance=set)
     context = {'form': form, 'set': set}
