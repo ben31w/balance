@@ -1,6 +1,7 @@
 """
 Views for the Workout Log app.
 """
+import datetime
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.shortcuts import render, redirect
@@ -133,16 +134,29 @@ def edit_set(request, set_id):
     return render(request, 'workout_log/edit_set.html', context)
 
 
+def get_selected_date(request):
+    """
+    Get the date that the user submitted in the dateInput on the daily page.
+    Or load today's date by default.
+    """
+    # TODO GET.get formats date as  YYYY-mm-dd
+    # today() formats date as       Month. dd, YYYY
+    selected_date = request.GET.get("selectedDate")
+    if not selected_date:
+        selected_date = datetime.date.today()
+    return selected_date
+
+
 @login_required
 def index(request):
     """Load the Workout Log home page (Daily view)."""
-    sets = Set.objects.filter(logged_by=request.user).order_by("index")
-    # serialize the sets and exerises into JSON objects so they 
-    #  can be processed by JavaScript
-    data = serializers.serialize("json", sets)
-    serialized_exercises = serializers.serialize("json", EXERCISES)
+    date = get_selected_date(request)
+    sets = Set.objects.filter(logged_by=request.user).filter(date=date)
 
-    context = {'data': data, 'exercises': serialized_exercises}
+    context = {
+        "date": date,
+        "sets": sets,
+    }
     return render(request, 'workout_log/index.html', context)
 
 
