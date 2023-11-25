@@ -9,27 +9,24 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import os
 from pathlib import Path
-import sys
 
-from django.core.management.utils import get_random_secret_key
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# These values are stored as environment variables on Digital Ocean 
-#  App Platform. Note that they are read as strings, then converted to 
-#  boolean/lists if necessary
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deploy'ment/checklist/
 
-# DEBUG = os.getenv('DEBUG', "False") == "True"  # For production
-DEBUG = os.getenv('DEBUG', "True") == "True"  # For development
-SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
-# DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"  # For production
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"  # For development
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-_x*qhnm7k5aa20-q#r+9gt%r#%87#6_ps(5=6f@=v@0xu_v1sz'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
 
 # Application definition
 
@@ -86,20 +83,12 @@ WSGI_APPLICATION = 'balance.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-if DEVELOPMENT_MODE is True:
-    DATABASES = {
-        "default": {
-            "ENGINE": 'django.db.backends.sqlite3',
-            "NAME": BASE_DIR / 'db.sqlite3',
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": 'django.db.backends.sqlite3',
+        "NAME": BASE_DIR / 'db.sqlite3',
     }
-elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
-    if os.getenv("DATABASE_URL", None) is None:
-        raise Exception("DATABASE_URL environment variable not defined")
-    DATABASES = {
-        "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
-    }
+}
 
 
 # Password validation
@@ -138,15 +127,9 @@ USE_TZ = True
 # STATICFILES_DIRS: list of directories where Django will look
 #   for static files
 # STATIC_URL: the URL that static files should be served under.
-#  In development, Django will automatically serve files from
-#  STATIC_ROOT at STATIC_URL. In production, it's up to you to
-#  configure your server to do so.
 # STATIC_ROOT: where collectstatic will copy all static files to
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'commons/static/',
-    BASE_DIR / 'workout_log/static/',
-]
+STATICFILES_DIRS = []
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
