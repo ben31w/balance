@@ -1,0 +1,13 @@
+<!-- Editing a logged food item page for the Nutrition Log app -->
+{% extends 'nutrition_log/base.html' %}
+
+{% block subcontent %}
+    <h1>My Nutrition Log</h1>
+    <h2>Edit logged food item</h2>
+
+    <form method="post" action="{% url 'nutrition_log:edit_logged_food_item' lfi.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="submit">Save</button>
+    </form>
+{% endblock subcontent %}

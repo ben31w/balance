@@ -29,6 +29,7 @@
         {% for lfi in logged_food_items %}
         <li>
             {{ lfi }}
+            <a href="{% url 'nutrition_log:edit_logged_food_item' 15 %}">edit</a>
         </li>
         {% endfor %}
     </ul>

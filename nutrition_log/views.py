@@ -4,9 +4,10 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
+from django.urls import reverse
 import plotly.express as px
 
-from commons.views import get_selected_date
+from commons.views import get_selected_date, verify_user_is_owner
 from .forms import DailyWeightForm, LogFoodItemForm, TargetCaloriesForm
 from .models import DailyWeight, LoggedFoodItem, Unit
 
@@ -91,7 +92,7 @@ def daily(request):
     context = {
         "date": date,
         "daily_weight": daily_wt,
-        "logged_food_items": strings,
+        "logged_food_items": strings,  # TODO need to pass actual objects not strings.
         "total_calories": calories,
         "total_protein": protein,
     }
@@ -113,6 +114,29 @@ def log_food_item(request):
         form = LogFoodItemForm()
     context = {"form": form}
     return render(request, "nutrition_log/log_food_item.html", context)
+
+
+@login_required()
+def edit_logged_food_item(request, lfi_id):
+    """Load a page where a user can edit a logged food item"""
+    lfi = LoggedFoodItem.objects.get(id=lfi_id)
+    owner = lfi.user
+    verify_user_is_owner(owner, request.user)
+
+    if request.method == 'POST':
+        form = LogFoodItemForm(instance=lfi, data=request.POST)
+        if form.is_valid():
+            form.save()
+
+            # Redirect back to the selected date
+            date = form.cleaned_data['date']
+            dateStr = date.strftime('%Y-%m-%d')
+            url = reverse('nutrition_log:daily') + f"?selectedDate={dateStr}"
+            return redirect(url)
+    else:
+        form = LogFoodItemForm(instance=lfi)
+    context = {'form': form, 'lfi': lfi}
+    return render(request, 'nutrition_log/edit_logged_food_item.html', context)
 
 
 @login_required
