@@ -23,4 +23,6 @@ Page for viewing a particular routine in the Workout Designer app
             </ul>
         {% endfor %}
     </ul>
+    
+    <a href="{% url 'workout_designer:delete_routine' routine.id %}">Delete this routine</a>
 {% endblock subcontent %}

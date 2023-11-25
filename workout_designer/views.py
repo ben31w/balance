@@ -59,6 +59,16 @@ def routine(request, routine_id):
 
 
 @login_required
+def delete_routine(request, routine_id):
+    """Delete this routine."""
+    routine = Routine.objects.get(id=routine_id)
+    owner = routine.user
+    verify_user_is_owner(owner, request.user)
+    routine.delete()
+    return redirect('workout_designer:index')
+
+
+@login_required
 def create_workout(request):
     """
     GET: Load the form for creating a workout
