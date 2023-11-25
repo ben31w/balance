@@ -13,7 +13,7 @@ links to create a routine and view all routines.
 {% block content %}
   <p>
     <strong>Views: </strong>
-    <a href="">My Workouts</a> -
+    <a href="{% url 'workout_designer:index' %}">My Workouts</a> -
     <a href="{% url 'workout_designer:create_workout' %}">Make me a Workout</a>
   </p>
 

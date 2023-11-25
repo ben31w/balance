@@ -1,6 +1,6 @@
 <!--
-Index page for the Workout Designer app
-Eventually this page will list all the workouts the user has created
+Index page for the Workout Designer app.
+Lists all the user's routines.
 -->
 
 {% extends 'workout_designer/base.html' %}
@@ -10,19 +10,10 @@ Eventually this page will list all the workouts the user has created
     <h2>My Routines</h2>
 
     <ul>
-        {% for routine, days in routine_dict.items %}
-            <li>{{ routine }}</li>
-            {% for day, planned_sets in days.items %}
-                <ul>
-                    <li>{{ day }}</li>
-                    {% for instance in planned_sets %}
-                        <ul>
-                            <li>{{ instance }}</li>
-                        </ul>
-                    {% empty %}
-                    {% endfor %}
-                </ul>
-            {% endfor %} 
+        {% for routine in routines %}
+            <li> 
+                <a href="{% url 'workout_designer:routine' routine.id %}">{{ routine }}</a>
+            </li>
         {% endfor %}
     </ul>
 {% endblock subcontent %}

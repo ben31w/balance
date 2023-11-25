@@ -1,0 +1,21 @@
+<!--
+Page for viewing a particular routine in the Workout Designer app
+-->
+
+{% extends 'workout_designer/base.html' %}
+
+{% block subcontent %}
+    <h1>Workout Designer</h1>
+    <h2>Routine</h2>
+
+    <ul>
+        {% for day_name, list_of_sets in routine_dict.items %}
+            <li>{{ day_name }}</li>
+            <ul>
+                {% for sets in list_of_sets %}
+                    <li>{{sets}}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
+{% endblock subcontent %}
