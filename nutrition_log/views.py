@@ -112,7 +112,12 @@ def log_food_item(request):
         logged_food_item.meal = 1
         logged_food_item.user = request.user
         logged_food_item.save()
-        return redirect("nutrition_log:daily")
+        
+        # Redirect back to the selected date
+        date = form.cleaned_data['date']
+        dateStr = date.strftime('%Y-%m-%d')
+        url = reverse('nutrition_log:daily') + f"?selectedDate={dateStr}"
+        return redirect(url)
     else:
         form = LogFoodItemForm()
     context = {"form": form}
