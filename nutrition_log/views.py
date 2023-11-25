@@ -4,7 +4,6 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
-from django.urls import reverse
 import plotly.express as px
 
 from commons.views import get_date_url, get_selected_date, verify_user_is_owner

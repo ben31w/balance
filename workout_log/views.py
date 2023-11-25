@@ -3,7 +3,6 @@ Views for the Workout Log app.
 """
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.urls import reverse
 import plotly.graph_objects as go
 
 from commons.views import get_date_url, get_selected_date, verify_user_is_owner
@@ -219,7 +218,8 @@ def new_set(request, set_id):
             # if the user hits submit, redirect to workout log.
             # if user hits submit + log again, this block is skipped
             if "submit" in request.POST:
-                return redirect('workout_log:index')
+                url = get_date_url('workout_log:index', this_date)
+                return redirect(url)
 
     context = {'form': form, 'set_id': set_id}
     return render(request, 'workout_log/new_set.html', context)
