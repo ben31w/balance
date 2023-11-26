@@ -33,7 +33,7 @@ def calculate_volume(user, start_date, end_date):
         muscles_worked = MUSCLES_WORKED.filter(exercise=set.exercise)
         for muscle_worked in muscles_worked:
             m = muscle_worked.muscle.name
-            if muscle_worked.directlyTargets:
+            if muscle_worked.directly_targets:
                 # update composite and direct volume
                 volume_dict[m][0] += 1
                 volume_dict[m][1] += 1
