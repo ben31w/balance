@@ -1,0 +1,41 @@
+/* Some additional styling for the website on top of Bootstrap. */
+
+/* Apply a basic reset to remove default table styling */
+table {
+    border-collapse: collapse;
+    width: 80%;
+}
+
+/* Style for table headers */
+th {
+    background-color: #f2f2f2;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+/* Style for alternate row colors */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Style for table cells */
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Hover effect on rows */
+tr:hover {
+    background-color: #e0e0e0;
+}
+
+/* Add some spacing to the table */
+table {
+    margin-top: 20px;
+}
+
+/* Add a border to the table */
+table, th, td {
+    border: 1px solid #ddd;
+}

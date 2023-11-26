@@ -129,7 +129,9 @@ USE_TZ = True
 # STATIC_URL: the URL that static files should be served under.
 # STATIC_ROOT: where collectstatic will copy all static files to
 
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [
+    'commons/static/'
+]
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
