@@ -6,5 +6,43 @@
 {% endblock title %}
 
 {% block content %}
-    <h1>Balance</h1>
+    <div class="jumbotron">
+        <h1 class="display-3">Visualize your fitness</h1>
+        <p class="lead">
+            Balance is an app that makes it easier to acheive your fitness goals.
+            <ul>
+                <li>
+                    Workout Log: log your sets on any day, and view your progress 
+                    for each exercise and volume in any time frame. 
+                </li>
+                <li>
+                    Nutrition Log: log your food items and body weight on any day, and view
+                    averages and progress over time
+                </li>
+                <li>
+                    Workout Designer: enter your fitness goals and time constraints
+                    to receive a cutom routine.
+                </li>
+            </ul>
+        </p>
+
+        {% if user.is_authenticated %}
+            <a class="btn btn-lg btn-primary" href="{% url 'workout_log:new_set' 0 %}" role="button">
+                Log a set &raquo;
+            </a>
+            <a class="btn btn-lg btn-primary" href="{% url 'nutrition_log:log_food_item' %}" role="button">
+                Log a food item &raquo;
+            </a>
+            <a class="btn btn-lg btn-primary" href="{% url 'workout_designer:create_workout' %}" role="button">
+                Make me a workout &raquo;
+            </a>
+        {% else %}
+            <a class="btn btn-lg btn-primary" href="{% url 'users:login' %}" role="button">
+                Log in &raquo;
+            </a>
+            <a class="btn btn-lg btn-primary" href="{% url 'users:register' %}" role="button">
+                Register &raquo;
+            </a>
+        {% endif %}
+    </div>
 {% endblock content %}
