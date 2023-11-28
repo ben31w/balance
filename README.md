@@ -40,6 +40,10 @@ Root directory files:
 - `requirements.txt`: list of pip packages required for this project
 
 
+# Dependencies
+You must have Python 3 installed to run this project.
+
+
 # How to run the project
 
 Balance is a locally hosted web app. 
