@@ -121,15 +121,14 @@ def create_routine(request, schedule, upper_limit, lower_limit, split, goal):
 @login_required
 def create_days_for_routine(routine):
     """Create Days for a Routine"""
-    match routine.split:
-        case Routine.ARN:
-            create_days_arnold(routine)
-        case Routine.BRO:
-            create_days_bro(routine)
-        case Routine.PPL:
-            create_days_ppl(routine)
-        case Routine.UL:
-            create_days_ul(routine)
+    if routine.split == Routine.ARN:
+        create_days_arnold(routine)
+    elif routine.split == Routine.BRO:
+        create_days_bro(routine)
+    elif routine.split == Routine.PPL:
+        create_days_ppl(routine)
+    elif routine.split == Routine.UL:
+        create_days_ul(routine)
 
 
 def create_days_arnold(routine):

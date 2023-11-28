@@ -30,20 +30,20 @@ class Routine(models.Model):
 
     def __str__(self) -> str:
         name = ""
-        match self.split:
-            case Routine.ARN:
-                name += "Arnold"
-            case Routine.BRO:
-                name += "Bro"
-            case Routine.PPL:
-                name += "Push-Pull-Legs"
-            case Routine.UL:
-                name += "Upper-Lower"
-        match self.is_synchronous:
-            case True:
-                name += ", Synchronous"
-            case False:
-                name += ", Asynchronous" 
+        if self.split == Routine.ARN:
+            name += "Arnold"
+        elif self.split == Routine.BRO:
+            name += "Bro"
+        elif self.split == Routine.PPL:
+            name += "Push-Pull-Legs"
+        elif self.split == Routine.UL:
+            name += "Upper-Lower"
+        
+        if self.is_synchronous:
+            name += ", Synchronous"
+        else:
+            name += ", Asynchronous"
+        
         return name
 
 
