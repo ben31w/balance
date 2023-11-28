@@ -315,14 +315,14 @@ def charts(request):
     return render(request, 'nutrition_log/charts.html')
 
 
-def create_chart(x_pts, y_pts, x_label, y_label, filepath):
+def create_chart(x_pts, y_pts, x_label, y_label, title, filepath):
     """
     Create a line chart with the given data and filepath.
     Note:
     filepath arg is relative to 'balance/' 
     while the arg for render() is relative to 'balance/nutrition_log/templates/'
     """
-    fig = px.scatter(x=x_pts, y=y_pts, labels={"x": x_label, "y": y_label})
+    fig = px.scatter(x=x_pts, y=y_pts, labels={"x": x_label, "y": y_label}, title=title)
     fig.write_html(file=f"nutrition_log/templates/{filepath}")
 
 
@@ -347,8 +347,9 @@ def create_calories_chart(request):
         calories_list.append(calories)
 
     # Create and render chart
+    title = "Calorie Intake Over Time"
     filename = f"charts/{request.user}-calories.html"
-    create_chart(dates, calories_list, 'Date', 'Daily Calories', filename)
+    create_chart(dates, calories_list, 'Date', 'Daily Calories', title, filename)
     return render(request, filename)
 
 
@@ -370,6 +371,7 @@ def create_weight_chart(request):
 
     # easier approach that is actually implemented:
     # just do what the workout log does, and open the HTML directly.
+    title = "Body Weight Over Time"
     filename = f"charts/{request.user}-weight.html"
-    create_chart(dates, weights, 'Date', 'Weight', filename)
+    create_chart(dates, weights, 'Date', 'Weight', title, filename)
     return render(request, filename)
