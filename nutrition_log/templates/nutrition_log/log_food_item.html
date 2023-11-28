@@ -9,5 +9,6 @@
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" name="submit">Save</button>
+        <button type="submit" name="submit_and_reload">Save + Log another item</button>
     </form>
 {% endblock subcontent %}

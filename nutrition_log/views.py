@@ -111,8 +111,12 @@ def log_food_item(request):
         logged_food_item.meal = 1
         logged_food_item.user = request.user
         logged_food_item.save()
-        url = get_date_url('nutrition_log:daily', form.cleaned_data['date'])
-        return redirect(url)
+
+        # if the user hits submit, redirect to nutrition log.
+        # if user hits submit + log again, this block is skipped
+        if "submit" in request.POST:
+            url = get_date_url('nutrition_log:daily', form.cleaned_data['date'])
+            return redirect(url)
     else:
         form = LogFoodItemForm()
     context = {"form": form}
