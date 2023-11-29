@@ -254,7 +254,7 @@ def weekly(request):
     padded_daily_weights = get_padded_daily_weights(dates, actual_daily_weights)
     avgWt = get_avg_weight(actual_daily_weights)
     daily_calories = get_list_of_calories(request, dates)
-    avgCal = get_avg_calories(request, dates)  # Django doesn't like avg_name
+    avgCal = get_avg_calories(request, dates)  # Django doesn't like variable that start w avg_
 
     # zip these lists so they can be used more efficiently in the template
     lists = zip(dates, padded_daily_weights, daily_calories)
@@ -318,10 +318,15 @@ def get_list_of_dates(start_date_str, end_date_str):
 def get_avg_calories(request, dates):
     """Get average calories for these dates"""
     total_cals = 0
+    count = 0  # needs to be tracked cause there are days the user hasn't logged
     for date in dates:
         _,_, daily_calories, _ = get_logged_food_items_stats(request, date)
-        total_cals += daily_calories
-    return total_cals / len(dates)
+        if daily_calories != 0:
+            total_cals += daily_calories
+            count += 1
+    if count == 0:
+        return 0
+    return total_cals / count
 
 
 @login_required
