@@ -24,12 +24,10 @@ def get_selected_date(request):
     name="selectedDate"
     If no date is selected, load today's date by default.
     """
-    # TODO GET.get formats date as  YYYY-mm-dd
-    # today() formats date as       Month. dd, YYYY
-    selected_date = request.GET.get("selectedDate")
-    if not selected_date:
-        selected_date = datetime.date.today()
-    return selected_date
+    selected_date_str = request.GET.get("selectedDate")
+    if selected_date_str:
+        return datetime.datetime.strptime(selected_date_str, "%Y-%m-%d").date()
+    return datetime.date.today()
 
 
 def index(request):
