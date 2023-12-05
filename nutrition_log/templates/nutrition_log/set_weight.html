@@ -6,11 +6,12 @@
     <h1>Log daily weight</h1>
 
     <p>
-        Enter your weight on the scale from this morning, or enter '0'
+        Enter your weight on the scale in the morning, or enter '0'
         to reset the weight.
     </p>
+    <p>Date: {{ date }}</p>
 
-    <form method="post" action="{% url 'nutrition_log:set_weight' %}">
+    <form method="post" action="{% url 'nutrition_log:set_weight' date.year date.month date.day %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" name="submit">Save</button>

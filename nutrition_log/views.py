@@ -154,8 +154,9 @@ def delete_logged_food_item(request, lfi_id):
 
 
 @login_required
-def set_weight(request):
+def set_weight(request, year, month, day):
     """Load a page where user can enter their daily weight"""
+    dt = datetime.date(year, month, day)
     if request.method == "POST":
         form = DailyWeightForm(data=request.POST)
         if form.is_valid():
@@ -164,9 +165,7 @@ def set_weight(request):
             #  this date already exists. If one already exists, update the
             #  existing entry instead of creating a duplicate.
             try:
-                old_weight = DailyWeight.objects.filter(user=request.user).get(
-                    date=new_weight.date
-                )
+                old_weight = DailyWeight.objects.filter(user=request.user).get(date=dt)
                 # An instance with this date exists, so edit it
 
                 # If the user entered 0, they are trying to remove the weight they entered
@@ -179,13 +178,14 @@ def set_weight(request):
             except ObjectDoesNotExist:
                 # No instance with this date exists, so we're good to make one!
                 new_weight.user = request.user
+                new_weight.date = dt
                 new_weight.save()
             finally:
-                url = get_date_url('nutrition_log:daily', form.cleaned_data['date'])
+                url = get_date_url('nutrition_log:daily', dt)
                 return redirect(url)
     else:
         form = DailyWeightForm()
-    context = {"form": form}
+    context = {"form": form, "date": dt}
     return render(request, "nutrition_log/set_weight.html", context)
 
 

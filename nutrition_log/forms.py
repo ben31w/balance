@@ -15,12 +15,7 @@ class DailyWeightForm(forms.ModelForm):
     """Form where users can log their daily weight"""
     class Meta:
         model = DailyWeight
-        fields = ['date', 'weight']
-        widgets = {'date': forms.SelectDateWidget()}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['date'].initial = date.today()  # Set the default date to today (temp)
+        fields = ['weight']
 
 
 class LogFoodItemForm(forms.ModelForm):

@@ -18,7 +18,7 @@
 
     <h3>Body weight</h3>
     <p><span id="dailyWeightLabel">{{ daily_weight }}</span> lbs</p>
-    <p><a href="{% url 'nutrition_log:set_weight' %}">Set weight</a></p>
+    <p><a href="{% url 'nutrition_log:set_weight' date.year date.month date.day %}">Set weight</a></p>
     
     <hr>
 
