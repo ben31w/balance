@@ -43,7 +43,7 @@ def get_curr_weekly_weight(request):
     """
     curr_date = datetime.date.today()
     curr_weekday = curr_date.isoweekday()
-    sunday = datetime.date(curr_date.year, curr_date.month, curr_date.day - curr_weekday)
+    sunday = curr_date - datetime.timedelta(days=curr_weekday)
 
     weekly_weights = DailyWeight.objects.filter(user=request.user).filter(
         date__range=[f"{sunday}", f"{curr_date}"]
