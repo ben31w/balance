@@ -33,7 +33,7 @@
     </ul>
 
 
-    <a href="{% url 'workout_log:new_set' 0 %}">
+    <a href="{% url 'workout_log:new_set' 0 date.year date.month date.day %}">
         Add a new set
     </a>
 

@@ -1,6 +1,7 @@
 """
 Views for the Workout Log app.
 """
+import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 import plotly.graph_objects as go
@@ -123,15 +124,16 @@ def edit_set(request, set_id):
     owner = set.logged_by
     verify_user_is_owner(owner, request.user)
 
+    dt = set.date
     if request.method == 'POST':
         form = SetForm(instance=set, data=request.POST)
         if form.is_valid():
             form.save()
-            url = get_date_url('workout_log:index', form.cleaned_data['date'])
+            url = get_date_url('workout_log:index', dt)
             return redirect(url)
     else:
         form = SetForm(instance=set)
-    context = {'form': form, 'set': set}
+    context = {'form': form, 'set': set, 'date': dt}
     return render(request, 'workout_log/edit_set.html', context)
 
 
@@ -180,7 +182,7 @@ def journal(request):
 
 
 @login_required()
-def new_set(request, set_id):
+def new_set(request, set_id, year, month, day):
     """
     Load a page where a user can log a new set.
     Parameter set_id is used to pre-populate the new set form with data
@@ -194,12 +196,14 @@ def new_set(request, set_id):
         owner = set.logged_by
         verify_user_is_owner(owner, request.user)
 
-    # GET requests, initialize form without submitting
+    dt = datetime.date(year, month, day)
+
+    # GET requests: initialize form without submitting
     if request.method != 'POST' and set_id == 0:
         form = SetForm()
     elif request.method != 'POST' and set_id != 0:
         form = SetForm(instance=set)
-    # POST request, check if data is valid and submit
+    # POST request: check if data is valid, set date, and submit
     else:
         if set_id == 0:
             form = SetForm(data=request.POST)
@@ -209,8 +213,8 @@ def new_set(request, set_id):
         if form.is_valid():
             this_set = form.save(commit=False)
             this_set.logged_by = request.user
-            this_date = form.cleaned_data["date"]
-            sets = Set.objects.filter(logged_by=request.user).filter(date=this_date)
+            this_set.date = dt
+            sets = Set.objects.filter(logged_by=request.user).filter(date=dt)
             # insert set behind all existing sets on this date by default
             this_set.index = len(sets)
             this_set.save()
@@ -218,10 +222,10 @@ def new_set(request, set_id):
             # if the user hits submit, redirect to workout log.
             # if user hits submit + log again, this block is skipped
             if "submit" in request.POST:
-                url = get_date_url('workout_log:index', this_date)
+                url = get_date_url('workout_log:index', dt)
                 return redirect(url)
 
-    context = {'form': form, 'set_id': set_id}
+    context = {'form': form, 'set_id': set_id, 'date': dt}
     return render(request, 'workout_log/new_set.html', context)
 
 
