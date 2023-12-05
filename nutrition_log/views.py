@@ -102,24 +102,26 @@ def daily(request):
 
 
 @login_required
-def log_food_item(request):
+def log_food_item(request, year, month, day):
     """Load a form where the user can log a food item"""
+    dt = datetime.date(year, month, day)
     if request.method == "POST":
         form = LogFoodItemForm(data=request.POST)
         logged_food_item = form.save(commit=False)
          # for now, we'll set meal=1 (breakfast) and won't worry about lunch, dinner, and snacks.
         logged_food_item.meal = 1
+        logged_food_item.date = dt
         logged_food_item.user = request.user
         logged_food_item.save()
 
         # if the user hits submit, redirect to nutrition log.
         # if user hits submit + log again, this block is skipped
         if "submit" in request.POST:
-            url = get_date_url('nutrition_log:daily', form.cleaned_data['date'])
+            url = get_date_url('nutrition_log:daily', dt)
             return redirect(url)
     else:
         form = LogFoodItemForm()
-    context = {"form": form}
+    context = {"form": form, "date": dt}
     return render(request, "nutrition_log/log_food_item.html", context)
 
 
@@ -134,7 +136,7 @@ def edit_logged_food_item(request, lfi_id):
         form = LogFoodItemForm(instance=lfi, data=request.POST)
         if form.is_valid():
             form.save()
-            url = get_date_url('nutrition_log:daily', form.cleaned_data['date'])
+            url = get_date_url('nutrition_log:daily', lfi.date)
             return redirect(url)
     else:
         form = LogFoodItemForm(instance=lfi)

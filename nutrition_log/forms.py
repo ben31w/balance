@@ -22,8 +22,7 @@ class LogFoodItemForm(forms.ModelForm):
     """Form where users can log a food item"""
     class Meta:
         model = LoggedFoodItem
-        fields = ['date', 'food_item', 'unit', 'quantity']
-        widgets = {'date': forms.SelectDateWidget()}
+        fields = ['food_item', 'unit', 'quantity']
 
 
 class TargetCaloriesForm(forms.ModelForm):

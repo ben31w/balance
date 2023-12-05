@@ -35,5 +35,5 @@
         {% endfor %}
     </ul>
 
-    <a href="{% url 'nutrition_log:log_food_item' %}">Log food item</a>
+    <a href="{% url 'nutrition_log:log_food_item' date.year date.month date.day %}">Log food item</a>
 {% endblock subcontent %}

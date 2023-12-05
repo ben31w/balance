@@ -4,8 +4,9 @@
 {% block subcontent %}
     <h1>My Nutrition Log</h1>
     <h2>Log a food item</h2>
+    <p>Date: {{ date }}</p>
 
-    <form method="post" action="{% url 'nutrition_log:log_food_item' %}">
+    <form method="post" action="{% url 'nutrition_log:log_food_item' date.year date.month date.day %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" name="submit">Save</button>

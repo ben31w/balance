@@ -4,6 +4,7 @@
 {% block subcontent %}
     <h1>My Nutrition Log</h1>
     <h2>Edit logged food item</h2>
+    <p>Date: {{ lfi.date }}</p>
 
     <form method="post" action="{% url 'nutrition_log:edit_logged_food_item' lfi.id %}">
         {% csrf_token %}
