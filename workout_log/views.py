@@ -95,7 +95,10 @@ def charts_instance(request, user_id, exercise_id):
         text=[hover_data[i] for i in range(len(hover_data))]
     ))
     fig.update_layout(
-        title=f"{exercise.name} - Progressive Overload",
+        title=dict(
+            text=f"{exercise} - Progressive Overload", 
+            font=dict(size=28)
+        ),
         xaxis_title='Date',
         yaxis_title='Average weight moved per set')
     # file arg is relative to 'balance/'

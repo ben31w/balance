@@ -345,6 +345,7 @@ def create_chart(x_pts, y_pts, x_label, y_label, title, filepath):
     while the arg for render() is relative to 'balance/nutrition_log/templates/'
     """
     fig = px.scatter(x=x_pts, y=y_pts, labels={"x": x_label, "y": y_label}, title=title)
+    fig.update_layout(title=dict(font=dict(size=28)))
     fig.write_html(file=f"nutrition_log/templates/{filepath}")
 
 
