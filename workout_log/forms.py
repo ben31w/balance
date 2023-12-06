@@ -13,10 +13,15 @@ class SetForm(forms.ModelForm):
     """Form where users can log a set"""
     class Meta:
         model = Set
-        # TODO the exercises need to be re-orded to appear alphabetically
-        # This can probably be done with formsets:
-        # https://docs.djangoproject.com/en/4.2/topics/forms/modelforms/
         fields = ['exercise', 'reps', 'weight']
+    
+    def __init__(self, *args, **kwargs):
+        super(SetForm, self).__init__(*args, **kwargs)
+        
+        # Sort exercise options alphabetically
+        exercise_field = self.fields['exercise']
+        exercise_field.queryset = exercise_field.queryset.order_by('name')
+
 
 
 class VolumeManagerForm(forms.Form):
