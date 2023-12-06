@@ -32,7 +32,9 @@ def get_selected_date(request):
 
 def index(request):
     """Open the home page"""
-    return render(request, 'commons/index.html')
+    td = datetime.date.today()
+    context = {'today': td}
+    return render(request, 'commons/index.html', context)
 
 
 def verify_user_is_owner(owner, user):
