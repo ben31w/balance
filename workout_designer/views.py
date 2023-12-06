@@ -45,9 +45,12 @@ def routine(request, routine_id):
     routine_dict = dict()
     days = Day.objects.filter(routine=routine)
     for day in days:
-        # need to account for two days with the same name (ex: two lower days)
+        # need to account for multiple days with the same name (ex: multiple rest days)
         if day.__str__() in routine_dict.keys():
-            curr_day_ls = routine_dict[f"{day} B"] = []
+            if f"{day} B" in routine_dict.keys():
+                curr_day_ls = routine_dict[f"{day} C"] = []
+            else:
+                curr_day_ls = routine_dict[f"{day} B"] = []
         else:
             curr_day_ls = routine_dict[f"{day}"] = []
         planned_sets = PlannedSets.objects.filter(day=day)

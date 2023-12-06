@@ -105,6 +105,8 @@ class Day(models.Model):
     routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
+        if self.day_type == DayType.objects.get(name=DayType.REST):
+            return self.name
         return f"{self.name} ({self.time_est_min} min.)"
 
 
